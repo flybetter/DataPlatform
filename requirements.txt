@@ -9,4 +9,5 @@ python-dateutil==2.7.3
 pytz==2018.5
 redis==2.10.6
 six==1.11.0
+tornado==5.1.1
 Werkzeug==0.14.1
