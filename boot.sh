@@ -1,5 +1,5 @@
 #!/bin/sh
 
-source venv/bin/active
+source ./venv/bin/active
 
-nohup python startup.py &
+nohup python ./startup.py &
