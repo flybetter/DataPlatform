@@ -199,7 +199,7 @@
         <div>
             城市:
             <select>
-                <option>南京</option>
+                <option>{{ cities }}</option>
                 <option>南京</option>
                 <option>南京</option>
                 <option>南京</option>
@@ -208,7 +208,7 @@
     </div>
     <div class="ub-f2 bggray">
         <ul>
-            <li><span>用户：</span>{{ phone }}</li>
+            <li><span>用户：</span>{{ userId }}</li>
             <li><span>访问记录：</span>新房（{{ newhouses_count }}）</li>
             <li>
                 <span>记录范围：</span>
@@ -224,7 +224,7 @@
         <ul>
             <li>总价范围：万</li>
             <li>户型范围：房</li>
-            <li>均价范围：{{ min_price }}-{{ max_price }}/m</li>
+            <li>均价范围：{{ min_price }}-{{ max_price }}元/m</li>
             <li>面积范围：m</li>
         </ul>
     </div>
@@ -236,7 +236,7 @@
 <script type="text/javascript">
     function FormatDate(strTime) {
         var date = new Date(strTime);
-        return date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate();
+        return date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate() + " "+date.getHours() + ":" + date.getMinutes() + ":" + date.getSeconds();
     }
 
     // 创建地图实例
@@ -251,8 +251,7 @@
     map.addControl(new BMap.NavigationControl());
     // 添加比例尺
     map.addControl(new BMap.ScaleControl());
-    json =
-    {{ newhouses|tojson }}
+    json ={{ newhouses|tojson }}
     var response = JSON.parse(json)
     $('#history-map-div').empty();
     var html = "";
@@ -266,20 +265,13 @@
         map.addOverlay(marker);
         // 设置覆盖物的文字标签
 
-        {#html += '<li>'#}
-        {#html += '<div><em class="clock"></em><span>' + new Date(poi.START_TIME) + '</span></div>'#}
-        {#html += '<div><em class="eye"></em><span>' + poi.COUNT + '</span></div>'#}
-        {#html += '<div>' + poi.PRJ_ITEMNAME + '</div>'#}
-        {#html += '<div>' + poi.PRICE_SHOW + '</div>'#}
-        {#html += '</li>'#}
+        html += '<li>'
+        html += '<div><em class="clock"></em><span>' + FormatDate(poi.START_TIME) + '</span></div>'
+        html += '<div><em class="eye"></em><span>' + poi.COUNT + '</span></div>'
+        html += '<div>' + poi.PRJ_ITEMNAME + '</div>'
+        html += '<div>' + poi.PRICE_SHOW + '</div>'
+        html += '</li>'
 
-
-         html += '<li>'
-			html += '<div><em class="clock"></em><span>2018.01.01 18:20</span></div>'
-			html += '<div><em class="eye"></em><span>12</span></div>'
-			html += '<div>恒大华府</div>'
-			html += '<div>价格待定</div>'
-		html += '</li>'
     }
 
     $('#history-map-div').append(html);
