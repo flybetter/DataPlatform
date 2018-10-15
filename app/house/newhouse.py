@@ -5,7 +5,7 @@ import traceback
 
 class newhouse:
     def __init__(self, df, city='南京'):
-        self.df = df
+        self.df = df[df['CITY_NAME'] == city]
         self.city = city
 
     def get_cities(self):
