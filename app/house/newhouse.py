@@ -32,7 +32,7 @@ class newhouse:
             df = self.df[self.df['CITY_NAME'] == self.city]
             df_result = df.sort_values(by='START_TIME', ascending=False)
             df_count = df_result.groupby('CONTEXT_ID').size().reset_index(name='COUNT')
-            df_order = df.groupby('CONTEXT_ID').nth(0)
+            df_order = df_result.groupby('CONTEXT_ID').nth(0)
             datas = df_order.merge(df_count, how='left', on='CONTEXT_ID')
             datas.sort_values(by='COUNT', ascending=False, inplace=True)
             return datas
