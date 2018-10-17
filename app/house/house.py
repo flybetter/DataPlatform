@@ -79,11 +79,11 @@ def newhouse_handle(newhouse_json, city='南京'):
 
 
 if __name__ == '__main__':
-    deviceids = r.smembers('PD^13851729904')
+    deviceids = r.smembers('PD^15298383419')
     result = list()
     for deviceid in deviceids:
         datas = r.lrange(NEWHOUSELOG_PREFIX + deviceid.decode('utf-8'), 0, 30)
         for data in datas:
             result.extend(json.loads(data.decode('utf-8')))
 
-    print(len(result))
+    print(json.dump(result))
