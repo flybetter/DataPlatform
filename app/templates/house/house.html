@@ -66,7 +66,7 @@
     </div>
     <div class="ub-f2 bggray">
         <ul>
-            <li><span>用户：</span>{{ userId }}</li>
+            <li><span id="user">用户：</span></li>
             <li><span>访问记录：</span>新房（{{ newhouses_count }}）</li>
             <li>
                 <span>记录范围：</span>
@@ -83,7 +83,7 @@
             <li>总价范围：万</li>
             <li>户型范围：房</li>
             <li>均价范围：{{ min_price }}-{{ max_price }}元/㎡</li>
-            <li>面积范围：m</li>
+            <li>面积范围：㎡</li>
         </ul>
     </div>
 
@@ -103,9 +103,31 @@
 		})
 		initArray();
 		
+		var user = {{ userId }};
+		user = user.toString();
+		user = user.substring(0, 3) + "****" + user.substring(7, 11);
+		$("#user").after(user);
+		
 	})
-	 
 	
+	var url = window.location.pathname,
+	hostname = window.location.hostname,
+	protocol = window.location.protocol,
+	port = window.location.port;
+	url = decodeURI(url);
+	urlleft = url.substring(0, url.lastIndexOf("/"));
+	day = url.substring(url.lastIndexOf("/") + 1);
+	urlphone = urlleft.substring(0, urlleft.lastIndexOf("/"));
+	city = urlleft.substring(urlleft.lastIndexOf("/") + 1);
+	phone = sessionStorage.getItem("phone");
+	if(!phone){
+		phone = urlphone.substring(urlphone.lastIndexOf("/") + 1);
+		sessionStorage.setItem("phone", phone);
+	}
+//	hiddenPhone = phone.substring(0, 3) + "****" + phone.substring(7, 11);
+	commonurl = protocol + "//" + hostname + ":" + port + "/houses/" + phone + "/";
+	hiddenurl = protocol + "//" + hostname + ":" + port + "/houses/" + phone + "/" + city + "/" + day;
+		
 	function initArray(){
 		var cityArr = sessionStorage.getItem("cityArr");
 		if(!cityArr){
@@ -123,17 +145,13 @@
 		for(var i = 0; i < cityArr.length; i++){
 			ophtml += '<option value="' + cityArr[i] + '">' + cityArr[i] + '</option>'
 		}
-		$("#changeCity").html(ophtml);
-		var url = window.location.href;
-		url = decodeURI(url);
-		urlleft = url.substring(0, url.lastIndexOf("/"));
-		day = url.substring(url.lastIndexOf("/") + 1);
-		city = urlleft.substring(urlleft.lastIndexOf("/") + 1);
+		$("#changeCity").html(ophtml);		
 		$("#changeDay").val(day); 
 		$("#changeCity").val(city);
+		
+		history.pushState("", "", hiddenurl);
 		return city;
 	}
-	
 	
 	function changeMap(mcity, mday){
 		if(mcity == ""){
@@ -142,7 +160,8 @@
 		if(mday == ""){
 			mday = day;
 		}
-		window.location.href="http://192.168.10.221:5000/houses/15051850598/" + mcity + "/" + mday;
+		console.log(commonurl + mcity + "/" + mday);
+		window.location.href = commonurl + mcity + "/" + mday;
 	}
 	
     function FormatDate(strTime) {
@@ -160,7 +179,7 @@
     map.addControl(new BMap.NavigationControl());
     map.addControl(new BMap.ScaleControl());
     json ={{ newhouses|tojson }}
-    var response = JSON.parse(json)
+    var response = JSON.parse(json);
     $('#history-map-div').empty();
     var html = "";
     
@@ -181,6 +200,9 @@
         html += '<div><em class="clock"></em><span>' + FormatDate(poi.START_TIME) + '</span></div>'
         html += '<div><em class="eye"></em><span>' + poi.COUNT + '</span></div>'
         html += '<div>' + poi.PRJ_ITEMNAME + '</div>'
+        if(poi.PRICE_SHOW == null){
+        	poi.PRICE_SHOW = "价格待定";
+        }
         html += '<div>' + poi.PRICE_SHOW + '</div>'
         html += '</li>'
         
