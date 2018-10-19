@@ -7,12 +7,10 @@ class newhouse:
     def __init__(self, df, city='南京'):
         self.df = df
         self.city = city
-        print("one")
 
     def get_cities(self):
         try:
             cities = self.df['CITY_NAME'].unique()
-            print("two")
             return cities
         except Exception:
             print(traceback.format_exc())
@@ -24,7 +22,6 @@ class newhouse:
             df_price = df[df['PRICE_SHOW'].str.contains('元/㎡', na=False)]
             min_price = min(df_price['PRICE_AVG'])
             max_price = max(df_price['PRICE_AVG'])
-            print("three")
             return min_price, max_price
         except Exception:
             print(traceback.format_exc())
@@ -38,7 +35,6 @@ class newhouse:
             df_order = df_result.groupby('CONTEXT_ID').nth(0)
             datas = df_order.merge(df_count, how='left', on='CONTEXT_ID')
             datas.sort_values(by='COUNT', ascending=False, inplace=True)
-            print("four")
             return datas
         except Exception:
             print(traceback.format_exc())
