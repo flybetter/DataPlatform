@@ -119,14 +119,7 @@
 	day = url.substring(url.lastIndexOf("/") + 1);
 	urlphone = urlleft.substring(0, urlleft.lastIndexOf("/"));
 	city = urlleft.substring(urlleft.lastIndexOf("/") + 1);
-	phone = sessionStorage.getItem("phone");
-	if(!phone){
-		phone = urlphone.substring(urlphone.lastIndexOf("/") + 1);
-		sessionStorage.setItem("phone", phone);
-	}
-//	hiddenPhone = phone.substring(0, 3) + "****" + phone.substring(7, 11);
-	commonurl = protocol + "//" + hostname + ":" + port + "/houses/" + phone + "/";
-	hiddenurl = protocol + "//" + hostname + ":" + port + "/houses/" + phone + "/" + city + "/" + day;
+	commonurl = protocol + "//" + hostname + ":" + port + urlphone + "/";
 		
 	function initArray(){
 		var cityArr = sessionStorage.getItem("cityArr");
@@ -143,14 +136,14 @@
 		}
 		var ophtml = "";
 		for(var i = 0; i < cityArr.length; i++){
+			if(cityArr[i].length <= 0){
+				continue;
+			}
 			ophtml += '<option value="' + cityArr[i] + '">' + cityArr[i] + '</option>'
 		}
 		$("#changeCity").html(ophtml);		
 		$("#changeDay").val(day); 
 		$("#changeCity").val(city);
-		
-		history.pushState("", "", hiddenurl);
-		return city;
 	}
 	
 	function changeMap(mcity, mday){
@@ -160,7 +153,6 @@
 		if(mday == ""){
 			mday = day;
 		}
-		console.log(commonurl + mcity + "/" + mday);
 		window.location.href = commonurl + mcity + "/" + mday;
 	}
 	
@@ -173,7 +165,6 @@
     // 创建地图实例
     var map = new BMap.Map("mapContainer");
     // 创建点坐标
-    var city = initArray();
     map.centerAndZoom(city);      
     map.enableScrollWheelZoom(true);
     map.addControl(new BMap.NavigationControl());
