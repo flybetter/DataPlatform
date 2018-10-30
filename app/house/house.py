@@ -1,10 +1,11 @@
 from . import houses
-from flask import render_template
+from flask import render_template, request
 from redis import Redis
 import json
 import pandas as pd
 import traceback
 from . import newhouse
+import hashlib
 
 # TODO 调试的用的redis
 r = Redis(host='192.168.10.221', port=6379, db=1)
@@ -14,18 +15,37 @@ NEWHOUSELOG_PREFIX = "NHLOG^"
 PHONEDEVICE_PREFIX = "PD^"
 
 
+# @houses.route("/<string:phone>/<string:city>/<int:num>", methods=['GET'])
+# def index(phone, num, city):
+#     deviceids = r.smembers(PHONEDEVICE_PREFIX + phone)
+#     result = list()
+#     for deviceid in deviceids:
+#         datas = r.lrange(NEWHOUSELOG_PREFIX + deviceid.decode('utf-8'), 0, num)
+#         for data in datas:
+#             result.extend(json.loads(data.decode('utf-8')))
+#
+#     cities, min_price, max_price, newhouses, newhouses_count = newhouse_handle(result, city)
+#     return render_template("house/house.html", newhouses=newhouses, userId=phone, num=num, cities=cities,
+#                            min_price=min_price, max_price=max_price, newhouses_count=newhouses_count)
+
+
 @houses.route("/<string:phone>/<string:city>/<int:num>", methods=['GET'])
 def index(phone, num, city):
-    deviceids = r.smembers(PHONEDEVICE_PREFIX + phone)
-    result = list()
-    for deviceid in deviceids:
-        datas = r.lrange(NEWHOUSELOG_PREFIX + deviceid.decode('utf-8'), 0, num)
-        for data in datas:
-            result.extend(json.loads(data.decode('utf-8')))
+    secret = request.args.get("secret")
+    m = hashlib.new('md5', (phone + 'house365').encode('utf-8')).hexdigest()
+    if m == secret:
+        deviceids = r.smembers(PHONEDEVICE_PREFIX + phone)
+        result = list()
+        for deviceid in deviceids:
+            datas = r.lrange(NEWHOUSELOG_PREFIX + deviceid.decode('utf-8'), 0, num)
+            for data in datas:
+                result.extend(json.loads(data.decode('utf-8')))
 
-    cities, min_price, max_price, newhouses, newhouses_count = newhouse_handle(result, city)
-    return render_template("house/house.html", newhouses=newhouses, userId=phone, num=num, cities=cities,
-                           min_price=min_price, max_price=max_price, newhouses_count=newhouses_count)
+        cities, min_price, max_price, newhouses, newhouses_count = newhouse_handle(result, city)
+        return render_template("house/house.html", newhouses=newhouses, userId=phone, num=num, cities=cities,
+                               min_price=min_price, max_price=max_price, newhouses_count=newhouses_count, secret=secret)
+    else:
+        return "the secret key is wrong"
 
 
 # def newhouse_handle(newhouse_json, city='南京'):
