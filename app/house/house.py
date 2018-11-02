@@ -6,13 +6,13 @@ import pandas as pd
 import traceback
 from . import newhouse
 import hashlib
+from ..config import get_config
 
-# TODO 调试的用的redis
-r = Redis(host='192.168.10.221', port=6379, db=1)
+r = Redis(host=get_config("REDIS_HOST"), port=6379, db=get_config("REDIS_DB"))
 # r2 = Redis(host='192.168.10.221', port=6379, db=2)
 
-NEWHOUSELOG_PREFIX = "NHLOG^"
-PHONEDEVICE_PREFIX = "PD^"
+NEWHOUSELOG_PREFIX = get_config("NEWHOUSELOG_PREFIX")
+PHONEDEVICE_PREFIX = get_config("PHONEDEVICE_PREFIX")
 
 
 # @houses.route("/<string:phone>/<string:city>/<int:num>", methods=['GET'])
