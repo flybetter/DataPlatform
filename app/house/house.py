@@ -32,6 +32,9 @@ PHONEDEVICE_PREFIX = get_config("PHONEDEVICE_PREFIX")
 @houses.route("/<string:phone>/<string:city>/<int:num>", methods=['GET'])
 def index(phone, num, city):
     secret = request.args.get("secret")
+    sort_key = request.args.get("sort_key")
+    if sort_key is None:
+        sort_key = 0
     m = hashlib.new('md5', (phone + 'house365').encode('utf-8')).hexdigest()
     if m == secret:
         deviceids = r.smembers(PHONEDEVICE_PREFIX + phone)
@@ -41,7 +44,7 @@ def index(phone, num, city):
             for data in datas:
                 result.extend(json.loads(data.decode('utf-8')))
 
-        cities, min_price, max_price, newhouses, newhouses_count = newhouse_handle(result, city)
+        cities, min_price, max_price, newhouses, newhouses_count = newhouse_handle(result, city, sort_key)
         return render_template("house/house.html", newhouses=newhouses, userId=phone, num=num, cities=cities,
                                min_price=min_price, max_price=max_price, newhouses_count=newhouses_count, secret=secret)
     else:
@@ -79,7 +82,7 @@ def index(phone, num, city):
 #         return list(), 0, 0, {}, count
 #
 #
-def newhouse_handle(newhouse_json, city='南京'):
+def newhouse_handle(newhouse_json, city='南京', sort_key=0):
     try:
         newhouse_json = json.dumps(newhouse_json, ensure_ascii=False)
         df = pd.read_json(newhouse_json, orient='records')
@@ -87,7 +90,7 @@ def newhouse_handle(newhouse_json, city='南京'):
         if count == 0:
             return list(), 0, 0, {}, count
         else:
-            object = newhouse.newhouse(df, city)
+            object = newhouse.newhouse(df, city, sort_key)
             cities = object.get_cities()
             min_price, max_price = object.get_price()
             datas = object.get_result()

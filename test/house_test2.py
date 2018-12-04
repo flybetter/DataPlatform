@@ -38,7 +38,7 @@ if __name__ == '__main__':
         print(key)
         datas = r.lrange(key, 0, 30)
         print(len(datas))
-        if len(datas) > 5:
+        if len(datas) > 10:
             for data in datas:
                 result.extend(json.loads(data.decode('utf-8')))
             df = pd.read_json(json.dumps(result, ensure_ascii=False), orient='records')
