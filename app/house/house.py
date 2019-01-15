@@ -110,3 +110,9 @@ if __name__ == '__main__':
             result.extend(json.loads(data.decode('utf-8')))
 
     print(json.dump(result))
+
+
+
+    #md5
+    # m = hashlib.new('md5', ('18652058969house365').encode('utf-8')).hexdigest()
+    # print(m)
