@@ -5,11 +5,12 @@ import numpy as np
 from flask import render_template
 import os
 
-
+#demo
 @newhouses.route("/")
 def index():
     newhouses_map = get_house_map()
     return render_template("/newhouse/newhouse_map.html", newhouses_map=newhouses_map)
+
 
 
 def get_house_map():

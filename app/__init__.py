@@ -12,7 +12,6 @@ def create_app():
     from .newhouse import newhouses as newhouse_blueprint
     app.register_blueprint(house_blueprint)
     app.register_blueprint(newhouse_blueprint)
-
     return app
 
 
