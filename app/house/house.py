@@ -51,6 +51,28 @@ def index(phone, num, city):
         return "the secret key is wrong"
 
 
+@houses.route("/<string:phone>/<string:city>/<int:num>/detail", methods=['GET'])
+def detail(phone, num, city):
+    secret = request.args.get("secret")
+    sort_key = request.args.get("sort_key")
+    if sort_key is None:
+        sort_key = 0
+    m = hashlib.new('md5', (phone + 'house365').encode('utf-8')).hexdigest()
+    if m == secret:
+        deviceids = r.smembers(PHONEDEVICE_PREFIX + phone)
+        result = list()
+        for deviceid in deviceids:
+            datas = r.lrange(NEWHOUSELOG_PREFIX + deviceid.decode('utf-8'), 0, num)
+            for data in datas:
+                result.extend(json.loads(data.decode('utf-8')))
+
+        cities, min_price, max_price, newhouses, newhouses_count = newhouse_handle(result, city, sort_key)
+        return render_template("house/house.html", newhouses=newhouses, userId=phone, num=num, cities=cities,
+                               min_price=min_price, max_price=max_price, newhouses_count=newhouses_count, secret=secret)
+    else:
+        return "the secret key is wrong"
+
+
 # def newhouse_handle(newhouse_json, city='南京'):
 #     try:
 #         newhouse_json = json.dumps(newhouse_json, ensure_ascii=False)
@@ -111,8 +133,6 @@ if __name__ == '__main__':
 
     print(json.dump(result))
 
-
-
-    #md5
+    # md5
     # m = hashlib.new('md5', ('18652058969house365').encode('utf-8')).hexdigest()
     # print(m)
