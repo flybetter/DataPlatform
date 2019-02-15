@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>用户详细数据</title>
+</head>
+<body>
+<!-- 图表容器 DOM -->
+<table>
+    <tr>
+        <td>
+            <div id="container" style="width: 600px;height:400px;"></div>
+        </td>
+        <td>
+            <div id="container1" style="width: 600px;height:400px;"></div>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <div id="container2" style="width: 600px;height:400px;"></div>
+        </td>
+        <td>
+            <div id="container3" style="width: 600px;height:400px;"></div>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <div id="container4" style="width: 600px;height:400px;"></div>
+        </td>
+        <td>
+            <div id="container5" style="width: 600px;height:400px;"></div>
+        </td>
+    </tr>
+</table>
+{#<div id="container" style="width: 600px;height:400px;"></div>#}
+
+
+<table border="border：1px">
+    <tr>
+        <td>次数</td>
+        <td>{{ count }}</td>
+    </tr>
+    <tr>
+        <td>均价</td>
+        <td>{{ avg_price }}</td>
+    </tr>
+    <tr>
+        <td>面积</td>
+        <td>{{ area }}</td>
+    </tr>
+    <tr>
+        <td>总价</td>
+        <td>{{ sum_price }}</td>
+    </tr>
+    <tr>
+        <td>卫生间</td>
+        <td>{{ toilet }}</td>
+    </tr>
+    <tr>
+        <td>房间</td>
+        <td>{{ bedroom }}</td>
+    </tr>
+    <tr>
+        <td>厅</td>
+        <td>{{ livingroom }}</td>
+    </tr>
+    <tr>
+        <td>厨房</td>
+        <td>{{ kitchen }}</td>
+    </tr>
+</table>
+<!-- 引入 highcharts.js -->
+<script src="http://cdn.hcharts.cn/highcharts/highcharts.js"></script>
+<script>
+    // 图表初始化函数
+    var chart = Highcharts.chart('container', {
+        chart: {
+            type: 'spline'
+        },
+        title: {
+            text: '用户点击频率'
+        },
+        //subtitle: {
+        //  text: '非规律性时间内的变化'
+        //},
+        xAxis: {
+            type: 'datetime',
+            {#title: {#}
+            {#    text: null#}
+            // }
+            tickInterval: 24 * 3600 * 1000,
+            //格式化时间，day,week....
+            dateTimeLabelFormats: {
+                day: '%m-%d'
+            }
+        },
+        {#colors: ['#6CF', '#39F', '#06C', '#036', '#000'],#}
+        yAxis: {
+            title: {
+                text: '次数'
+            },
+            min: 0
+        },
+        tooltip: {
+            headerFormat: '<b>{series.name}</b><br>',
+            {#pointFormat: '{point.x:%e. %b}: {point.y:.2f} m'#}
+            pointFormat: '{point.y:.2f}'
+        },
+        plotOptions: {
+            spline: {
+                marker: {
+                    enabled: true
+                }
+            }
+        },
+        series: [{
+            name: '频次',
+            // Define the data points. All series have a dummy year
+            // of 1970/71 in order to be compared on the same x axis. Note
+            // that in JavaScript, months start at 0 for January, 1 for February etc.
+            data: {{ click_frequency_diagram }}
+        }]
+    });
+
+
+        var chart = Highcharts.chart('container1', {
+        chart: {
+            type: 'column'
+        },
+        title: {
+            text: '月平均降雨量'
+        },
+        subtitle: {
+            text: '数据来源: WorldClimate.com'
+        },
+        xAxis: {
+            categories: [
+                '一月', '二月', '三月', '四月', '五月', '六月', '七月', '八月', '九月', '十月', '十一月', '十二月'
+            ],
+            crosshair: true
+        },
+        yAxis: {
+            min: 0,
+            title: {
+                text: '降雨量 (mm)'
+            }
+        },
+        tooltip: {
+            // head + 每个 point + footer 拼接成完整的 table
+            headerFormat: '<span style="font-size:10px">{point.key}</span><table>',
+            pointFormat: '<tr><td style="color:{series.color};padding:0">{series.name}: </td>' +
+                '<td style="padding:0"><b>{point.y:.1f} mm</b></td></tr>',
+            footerFormat: '</table>',
+            shared: true,
+            useHTML: true
+        },
+        plotOptions: {
+            column: {
+                borderWidth: 0
+            }
+        },
+        series: [{
+            name: '东京',
+            data: [49.9, 71.5, 106.4, 129.2, 144.0, 176.0, 135.6, 148.5, 216.4, 194.1, 95.6, 54.4]
+        }, {
+            name: '纽约',
+            data: [83.6, 78.8, 98.5, 93.4, 106.0, 84.5, 105.0, 104.3, 91.2, 83.5, 106.6, 92.3]
+        }, {
+            name: '伦敦',
+            data: [48.9, 38.8, 39.3, 41.4, 47.0, 48.3, 59.0, 59.6, 52.4, 65.2, 59.3, 51.2]
+        }, {
+            name: '柏林',
+            data: [42.4, 33.2, 34.5, 39.7, 52.6, 75.5, 57.4, 60.4, 47.6, 39.1, 46.8, 51.1]
+        }]
+    });
+
+    var chart = Highcharts.chart('container2', {
+        chart: {
+            type: 'bar'                          //指定图表的类型，默认是折线图（line）
+        },
+        title: {
+            text: '我的第一个图表'                 // 标题
+        },
+        xAxis: {
+            categories: ['苹果', '香蕉', '橙子']   // x 轴分类
+        },
+        yAxis: {
+            title: {
+                text: '吃水果个数'                // y 轴标题
+            }
+        },
+        series: [{                              // 数据列
+            name: '小明',                        // 数据列名
+            data: [1, 0, 4]                     // 数据
+        }, {
+            name: '小红',
+            data: [5, 7, 3]
+        }]
+    });
+
+    var chart = Highcharts.chart('container1', {
+        chart: {
+            type: 'column'
+        },
+        title: {
+            text: '月平均降雨量'
+        },
+        subtitle: {
+            text: '数据来源: WorldClimate.com'
+        },
+        xAxis: {
+            categories: [
+                '一月', '二月', '三月', '四月', '五月', '六月', '七月', '八月', '九月', '十月', '十一月', '十二月'
+            ],
+            crosshair: true
+        },
+        yAxis: {
+            min: 0,
+            title: {
+                text: '降雨量 (mm)'
+            }
+        },
+        tooltip: {
+            // head + 每个 point + footer 拼接成完整的 table
+            headerFormat: '<span style="font-size:10px">{point.key}</span><table>',
+            pointFormat: '<tr><td style="color:{series.color};padding:0">{series.name}: </td>' +
+                '<td style="padding:0"><b>{point.y:.1f} mm</b></td></tr>',
+            footerFormat: '</table>',
+            shared: true,
+            useHTML: true
+        },
+        plotOptions: {
+            column: {
+                borderWidth: 0
+            }
+        },
+        series: [{
+            name: '东京',
+            data: [49.9, 71.5, 106.4, 129.2, 144.0, 176.0, 135.6, 148.5, 216.4, 194.1, 95.6, 54.4]
+        }, {
+            name: '纽约',
+            data: [83.6, 78.8, 98.5, 93.4, 106.0, 84.5, 105.0, 104.3, 91.2, 83.5, 106.6, 92.3]
+        }, {
+            name: '伦敦',
+            data: [48.9, 38.8, 39.3, 41.4, 47.0, 48.3, 59.0, 59.6, 52.4, 65.2, 59.3, 51.2]
+        }, {
+            name: '柏林',
+            data: [42.4, 33.2, 34.5, 39.7, 52.6, 75.5, 57.4, 60.4, 47.6, 39.1, 46.8, 51.1]
+        }]
+    });
+
+    Highcharts.chart('container3', {
+        chart: {
+            plotBackgroundColor: null,
+            plotBorderWidth: null,
+            plotShadow: false,
+            type: 'pie'
+        },
+        title: {
+            text: '2018年1月浏览器市场份额'
+        },
+        tooltip: {
+            pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
+        },
+        plotOptions: {
+            pie: {
+                allowPointSelect: true,
+                cursor: 'pointer',
+                dataLabels: {
+                    enabled: true,
+                    format: '<b>{point.name}</b>: {point.percentage:.1f} %',
+                    style: {
+                        color: (Highcharts.theme && Highcharts.theme.contrastTextColor) || 'black'
+                    }
+                }
+            }
+        },
+        series: [{
+            name: 'Brands',
+            colorByPoint: true,
+            data: [{
+                name: 'Chrome',
+                y: 61.41,
+                sliced: true,
+                selected: true
+            }, {
+                name: 'Internet Explorer',
+                y: 11.84
+            }, {
+                name: 'Firefox',
+                y: 10.85
+            }, {
+                name: 'Edge',
+                y: 4.67
+            }, {
+                name: 'Safari',
+                y: 4.18
+            }, {
+                name: 'Sogou Explorer',
+                y: 1.64
+            }, {
+                name: 'Opera',
+                y: 1.6
+            }, {
+                name: 'QQ',
+                y: 1.2
+            }, {
+                name: 'Other',
+                y: 2.61
+            }]
+        }]
+    });
+
+
+    Highcharts.chart('container4', {
+        chart: {
+            plotBackgroundColor: null,
+            plotBorderWidth: null,
+            plotShadow: false,
+            type: 'pie'
+        },
+        title: {
+            text: '2018年1月浏览器市场份额'
+        },
+        tooltip: {
+            pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
+        },
+        plotOptions: {
+            pie: {
+                allowPointSelect: true,
+                cursor: 'pointer',
+                dataLabels: {
+                    enabled: true,
+                    format: '<b>{point.name}</b>: {point.percentage:.1f} %',
+                    style: {
+                        color: (Highcharts.theme && Highcharts.theme.contrastTextColor) || 'black'
+                    }
+                }
+            }
+        },
+        series: [{
+            name: 'Brands',
+            colorByPoint: true,
+            data: [{
+                name: 'Chrome',
+                y: 61.41,
+                sliced: true,
+                selected: true
+            }, {
+                name: 'Internet Explorer',
+                y: 11.84
+            }, {
+                name: 'Firefox',
+                y: 10.85
+            }, {
+                name: 'Edge',
+                y: 4.67
+            }, {
+                name: 'Safari',
+                y: 4.18
+            }, {
+                name: 'Sogou Explorer',
+                y: 1.64
+            }, {
+                name: 'Opera',
+                y: 1.6
+            }, {
+                name: 'QQ',
+                y: 1.2
+            }, {
+                name: 'Other',
+                y: 2.61
+            }]
+        }]
+    });
+
+    Highcharts.chart('container5', {
+        chart: {
+            plotBackgroundColor: null,
+            plotBorderWidth: null,
+            plotShadow: false,
+            type: 'pie'
+        },
+        title: {
+            text: '2018年1月浏览器市场份额'
+        },
+        tooltip: {
+            pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
+        },
+        plotOptions: {
+            pie: {
+                allowPointSelect: true,
+                cursor: 'pointer',
+                dataLabels: {
+                    enabled: true,
+                    format: '<b>{point.name}</b>: {point.percentage:.1f} %',
+                    style: {
+                        color: (Highcharts.theme && Highcharts.theme.contrastTextColor) || 'black'
+                    }
+                }
+            }
+        },
+        series: [{
+            name: 'Brands',
+            colorByPoint: true,
+            data: [{
+                name: 'Chrome',
+                y: 61.41,
+                sliced: true,
+                selected: true
+            }, {
+                name: 'Internet Explorer',
+                y: 11.84
+            }, {
+                name: 'Firefox',
+                y: 10.85
+            }, {
+                name: 'Edge',
+                y: 4.67
+            }, {
+                name: 'Safari',
+                y: 4.18
+            }, {
+                name: 'Sogou Explorer',
+                y: 1.64
+            }, {
+                name: 'Opera',
+                y: 1.6
+            }, {
+                name: 'QQ',
+                y: 1.2
+            }, {
+                name: 'Other',
+                y: 2.61
+            }]
+        }]
+    });
+</script>
+
+
+</body>
+</html>

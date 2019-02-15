@@ -49,7 +49,7 @@ if __name__ == '__main__':
     # df.to_csv("data.txt", index=False)
 
     # df = pd.read_json(datas, orient='records')
-    # object = newhouse(df, '合肥')
+    # object = newhouse_demo(df, '合肥')
     # cities = object.get_cities()
     # min_price, max_price = object.get_price()
     # datas = object.get_result()

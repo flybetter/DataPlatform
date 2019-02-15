@@ -9,7 +9,7 @@ import os
 @newhouses.route("/")
 def index():
     newhouses_map = get_house_map()
-    return render_template("/newhouse/newhouse_map.html", newhouses_map=newhouses_map)
+    return render_template("/newhouse_demo/newhouse_map.html", newhouses_map=newhouses_map)
 
 
 

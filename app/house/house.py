@@ -5,6 +5,7 @@ import json
 import pandas as pd
 import traceback
 from . import newhouse
+from . import newhouseDetail
 import hashlib
 from ..config import get_config
 
@@ -66,11 +67,31 @@ def detail(phone, num, city):
             for data in datas:
                 result.extend(json.loads(data.decode('utf-8')))
 
-        cities, min_price, max_price, newhouses, newhouses_count = newhouse_handle(result, city, sort_key)
-        return render_template("house/house.html", newhouses=newhouses, userId=phone, num=num, cities=cities,
-                               min_price=min_price, max_price=max_price, newhouses_count=newhouses_count, secret=secret)
+        count, avg_price, area, sum_price, toilet, bedroom, livingroom, kitchen = newhouseDetail_handle(result,
+                                                                                                        city,
+                                                                                                        sort_key)
+        # TODO
+        newhouse_json = json.dumps(result, ensure_ascii=False)
+        df = pd.read_json(newhouse_json, orient='records')
+        object = newhouseDetail.newhouseDetail(df, city, sort_key)
+        click_frequency_diagram=object.get_click_frequency_diagram()
+
+        return render_template("house/newhouseDetail.html", count=count, avg_price=avg_price, area=area,
+                               sum_price=sum_price, toilet=toilet, bedroom=bedroom, livingroom=livingroom,
+                               kitchen=kitchen,click_frequency_diagram=click_frequency_diagram)
     else:
         return "the secret key is wrong"
+
+
+# count
+# avg_price
+# area
+# sum_price
+# sum_price
+# toilet
+# bedroom
+# ivingroom
+# kitchen
 
 
 # def newhouse_handle(newhouse_json, city='南京'):
@@ -118,6 +139,29 @@ def newhouse_handle(newhouse_json, city='南京', sort_key=0):
             datas = object.get_result()
             datas = datas.to_json(orient="records", force_ascii=False)
         return cities, min_price, max_price, datas, count
+    except Exception:
+        print(traceback.format_exc())
+        return list(), 0, 0, {}, count
+
+
+def newhouseDetail_handle(newhouse_json, city='南京', sort_key=0):
+    try:
+        newhouse_json = json.dumps(newhouse_json, ensure_ascii=False)
+        df = pd.read_json(newhouse_json, orient='records')
+        count = len(df)
+        if count == 0:
+            return list(), 0, 0, {}, count
+        else:
+            object = newhouseDetail.newhouseDetail(df, city, sort_key)
+            count = object.get_sum_count()
+            avg_price = object.get_avg_price()
+            area = object.get_area()
+            sum_price = object.get_sum_price()
+            toilet = object.get_toilet()
+            bedroom = object.get_bedroom()
+            livingroom = object.get_livingroom()
+            kitchen = object.get_kitchen()
+        return count, avg_price, area, sum_price, toilet, bedroom, livingroom, kitchen
     except Exception:
         print(traceback.format_exc())
         return list(), 0, 0, {}, count
