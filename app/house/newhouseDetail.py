@@ -92,3 +92,27 @@ class newhouseDetail:
     def get_click_frequency_diagram(self):
         count_df = self.df.groupby("DATA_DATE").size().reset_index(name='counts')
         return count_df.to_json(orient='values', index=True)
+
+    def get_avg_price_histogram(self):
+        self.fiter_df['avg_price_range'] = pd.cut(self.fiter_df['PRICE_AVG'], bins=20, right=False)
+        value_df = self.fiter_df.groupby("avg_price_range").size().reset_index(name='counts')
+        return (value_df['avg_price_range'].astype('str').to_json(orient='values', index=True),
+                value_df['counts'].to_json(orient='values', index=True))
+
+    def get_area_histogram(self):
+        self.df['PIC_AREA'] = pd.cut(self.df['PIC_AREA'], bins=10, right=False)
+        value_df = self.df.groupby("PIC_AREA").size().reset_index(name='counts')
+        return (value_df['PIC_AREA'].astype('str').to_json(orient='values', index=True),
+                value_df['counts'].to_json(orient='values', index=True))
+
+    def get_sum_price_histogram(self):
+        self.df['PIC_HX_TOTALPRICE'] = pd.cut(self.df['PIC_HX_TOTALPRICE'], bins=20, right=False)
+        value_df = self.df.groupby("PIC_HX_TOTALPRICE").size().reset_index(name='counts')
+        return (value_df['PIC_HX_TOTALPRICE'].astype('str').to_json(orient='values', index=True),
+                value_df['counts'].to_json(orient='values', index=True))
+
+    def get_toilet_pie(self):
+        count_df = self.df.groupby("PIC_WEI").size().reset_index(name='counts')
+        return count_df.to_json(orient='values', index=True)
+
+

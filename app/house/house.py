@@ -74,11 +74,15 @@ def detail(phone, num, city):
         newhouse_json = json.dumps(result, ensure_ascii=False)
         df = pd.read_json(newhouse_json, orient='records')
         object = newhouseDetail.newhouseDetail(df, city, sort_key)
-        click_frequency_diagram=object.get_click_frequency_diagram()
-
+        click_frequency_diagram = object.get_click_frequency_diagram()
+        avg_price_histogram = object.get_avg_price_histogram()
+        sum_price_histogram = object.get_sum_price_histogram()
+        area_histogram = object.get_area_histogram()
         return render_template("house/newhouseDetail.html", count=count, avg_price=avg_price, area=area,
                                sum_price=sum_price, toilet=toilet, bedroom=bedroom, livingroom=livingroom,
-                               kitchen=kitchen,click_frequency_diagram=click_frequency_diagram)
+                               kitchen=kitchen, click_frequency_diagram=click_frequency_diagram,
+                               avg_price_histogram=avg_price_histogram, sum_price_histogram=sum_price_histogram,
+                               area_histogram=area_histogram)
     else:
         return "the secret key is wrong"
 
