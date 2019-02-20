@@ -31,6 +31,14 @@
             <div id="container5" style="width: 600px;height:400px;"></div>
         </td>
     </tr>
+    <tr>
+        <td>
+            <div id="container6" style="width: 600px;height:400px;"></div>
+        </td>
+        <td>
+            <div id="container7" style="width: 600px;height:400px;"></div>
+        </td>
+    </tr>
 </table>
 {#<div id="container" style="width: 600px;height:400px;"></div>#}
 
@@ -186,6 +194,13 @@
         }]
     });
 
+    function htmlDecode(input) {
+        var e = document.createElement('div');
+        e.innerHTML = input;
+        // handle case of empty input
+        return e.childNodes.length === 0 ? "" : e.childNodes[0].nodeValue;
+    }
+
 
     Highcharts.chart('container4', {
         chart: {
@@ -195,7 +210,7 @@
             type: 'pie'
         },
         title: {
-            text: '2018年1月浏览器市场份额'
+            text: '卫生间'
         },
         tooltip: {
             pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
@@ -216,38 +231,10 @@
         series: [{
             name: 'Brands',
             colorByPoint: true,
-            data: [{
-                name: 'Chrome',
-                y: 61.41,
-                sliced: true,
-                selected: true
-            }, {
-                name: 'Internet Explorer',
-                y: 11.84
-            }, {
-                name: 'Firefox',
-                y: 10.85
-            }, {
-                name: 'Edge',
-                y: 4.67
-            }, {
-                name: 'Safari',
-                y: 4.18
-            }, {
-                name: 'Sogou Explorer',
-                y: 1.64
-            }, {
-                name: 'Opera',
-                y: 1.6
-            }, {
-                name: 'QQ',
-                y: 1.2
-            }, {
-                name: 'Other',
-                y: 2.61
-            }]
+            data: JSON.parse(htmlDecode('{{ toilet_pie  }}'))
         }]
     });
+
 
     Highcharts.chart('container5', {
         chart: {
@@ -257,7 +244,7 @@
             type: 'pie'
         },
         title: {
-            text: '2018年1月浏览器市场份额'
+            text: '卧室'
         },
         tooltip: {
             pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
@@ -278,38 +265,78 @@
         series: [{
             name: 'Brands',
             colorByPoint: true,
-            data: [{
-                name: 'Chrome',
-                y: 61.41,
-                sliced: true,
-                selected: true
-            }, {
-                name: 'Internet Explorer',
-                y: 11.84
-            }, {
-                name: 'Firefox',
-                y: 10.85
-            }, {
-                name: 'Edge',
-                y: 4.67
-            }, {
-                name: 'Safari',
-                y: 4.18
-            }, {
-                name: 'Sogou Explorer',
-                y: 1.64
-            }, {
-                name: 'Opera',
-                y: 1.6
-            }, {
-                name: 'QQ',
-                y: 1.2
-            }, {
-                name: 'Other',
-                y: 2.61
-            }]
+            data: JSON.parse(htmlDecode('{{ bedroom_pie  }}'))
         }]
     });
+
+
+    Highcharts.chart('container6', {
+        chart: {
+            plotBackgroundColor: null,
+            plotBorderWidth: null,
+            plotShadow: false,
+            type: 'pie'
+        },
+        title: {
+            text: '客厅'
+        },
+        tooltip: {
+            pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
+        },
+        plotOptions: {
+            pie: {
+                allowPointSelect: true,
+                cursor: 'pointer',
+                dataLabels: {
+                    enabled: true,
+                    format: '<b>{point.name}</b>: {point.percentage:.1f} %',
+                    style: {
+                        color: (Highcharts.theme && Highcharts.theme.contrastTextColor) || 'black'
+                    }
+                }
+            }
+        },
+        series: [{
+            name: 'Brands',
+            colorByPoint: true,
+            data: JSON.parse(htmlDecode('{{ livingroom_pie  }}'))
+        }]
+    });
+
+
+    Highcharts.chart('container7', {
+        chart: {
+            plotBackgroundColor: null,
+            plotBorderWidth: null,
+            plotShadow: false,
+            type: 'pie'
+        },
+        title: {
+            text: '厨房'
+        },
+        tooltip: {
+            pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
+        },
+        plotOptions: {
+            pie: {
+                allowPointSelect: true,
+                cursor: 'pointer',
+                dataLabels: {
+                    enabled: true,
+                    format: '<b>{point.name}</b>: {point.percentage:.1f} %',
+                    style: {
+                        color: (Highcharts.theme && Highcharts.theme.contrastTextColor) || 'black'
+                    }
+                }
+            }
+        },
+        series: [{
+            name: 'Brands',
+            colorByPoint: true,
+            data: JSON.parse(htmlDecode('{{ kitchen_pie  }}'))
+        }]
+    });
+
 </script>
 
 

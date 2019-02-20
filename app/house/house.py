@@ -78,11 +78,16 @@ def detail(phone, num, city):
         avg_price_histogram = object.get_avg_price_histogram()
         sum_price_histogram = object.get_sum_price_histogram()
         area_histogram = object.get_area_histogram()
+        toilet_pie = object.get_toilet_pie()
+        bedroom_pie = object.get_bedroom_pie()
+        livingroom_pie = object.get_livingroom_pie()
+        kitchen_pie = object.get_kitchen_pie()
         return render_template("house/newhouseDetail.html", count=count, avg_price=avg_price, area=area,
                                sum_price=sum_price, toilet=toilet, bedroom=bedroom, livingroom=livingroom,
                                kitchen=kitchen, click_frequency_diagram=click_frequency_diagram,
                                avg_price_histogram=avg_price_histogram, sum_price_histogram=sum_price_histogram,
-                               area_histogram=area_histogram)
+                               area_histogram=area_histogram, toilet_pie=toilet_pie, bedroom_pie=bedroom_pie,
+                               livingroom_pie=livingroom_pie, kitchen_pie=kitchen_pie)
     else:
         return "the secret key is wrong"
 

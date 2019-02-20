@@ -112,7 +112,31 @@ class newhouseDetail:
                 value_df['counts'].to_json(orient='values', index=True))
 
     def get_toilet_pie(self):
-        count_df = self.df.groupby("PIC_WEI").size().reset_index(name='counts')
-        return count_df.to_json(orient='values', index=True)
+        temp = pd.DataFrame(
+            {'Percentage': self.df.groupby("PIC_WEI").size() / len(self.df['PIC_WEI'].dropna())}).reset_index().rename(
+            columns={'PIC_WEI': 'name', 'Percentage': 'y'})
+        temp['name'] = temp['name'].astype(str).map(lambda x: x.replace('.0', '间'))
+        return temp.to_json(orient='records', index=True)
 
+    def get_bedroom_pie(self):
+        di = {8: 1, 9: 2, 10: 3, 11: 4, 21: 5, 22: 6}
+        df = self.df.replace({"PIC_TYPE": di})
+        temp = pd.DataFrame(
+            {'Percentage': df.groupby("PIC_TYPE").size() / len(df['PIC_TYPE'].dropna())}).reset_index().rename(
+            columns={'PIC_TYPE': 'name', 'Percentage': 'y'})
+        temp['name'] = temp['name'].astype(str).map(lambda x: x.replace('.0', '室'))
+        return temp.to_json(orient='records', index=True)
 
+    def get_livingroom_pie(self):
+        temp = pd.DataFrame(
+            {'Percentage': self.df.groupby("PIC_TING").size() / len(self.df['PIC_TING'].dropna())}).reset_index().rename(
+            columns={'PIC_TING': 'name', 'Percentage': 'y'})
+        temp['name'] = temp['name'].astype(str).map(lambda x: x.replace('.0', '间'))
+        return temp.to_json(orient='records', index=True)
+
+    def get_kitchen_pie(self):
+        temp = pd.DataFrame(
+            {'Percentage': self.df.groupby("PIC_CHU").size() / len(self.df['PIC_CHU'].dropna())}).reset_index().rename(
+            columns={'PIC_CHU': 'name', 'Percentage': 'y'})
+        temp['name'] = temp['name'].astype(str).map(lambda x: x.replace('.0', '间'))
+        return temp.to_json(orient='records', index=True)
