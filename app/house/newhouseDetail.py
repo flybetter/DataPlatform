@@ -1,6 +1,7 @@
 import pandas as pd
 import json
 import traceback
+import re
 
 
 class newhouseDetail:
@@ -70,7 +71,9 @@ class newhouseDetail:
     def get_sum_price(self):
         try:
             # TODO  有点情况下，没有总价， 需要均价*面积得到总价。目前用最简单的
-            return self.df['PIC_HX_TOTALPRICE'].mean()
+            return pd.to_numeric(
+                self.df['PIC_HX_TOTALPRICE'].astype(str).map(lambda x: re.sub(u'[\u4E00-\u9FA5]', '', x)),
+                errors='coerce').mean()
         except Exception:
             print(traceback.format_exc())
             return 0
@@ -106,8 +109,14 @@ class newhouseDetail:
                 value_df['counts'].to_json(orient='values', index=True))
 
     def get_sum_price_histogram(self):
-        self.df['PIC_HX_TOTALPRICE'] = pd.cut(self.df['PIC_HX_TOTALPRICE'], bins=20, right=False)
+
+        self.df['PIC_HX_TOTALPRICE'] = pd.cut(pd.to_numeric(
+            self.df['PIC_HX_TOTALPRICE'].astype(str).map(lambda x: re.sub(u'[\u4E00-\u9FA5]', '', x)),
+            errors='coerce'),
+            bins=20, right=False)
+
         value_df = self.df.groupby("PIC_HX_TOTALPRICE").size().reset_index(name='counts')
+
         return (value_df['PIC_HX_TOTALPRICE'].astype('str').to_json(orient='values', index=True),
                 value_df['counts'].to_json(orient='values', index=True))
 
@@ -129,7 +138,8 @@ class newhouseDetail:
 
     def get_livingroom_pie(self):
         temp = pd.DataFrame(
-            {'Percentage': self.df.groupby("PIC_TING").size() / len(self.df['PIC_TING'].dropna())}).reset_index().rename(
+            {'Percentage': self.df.groupby("PIC_TING").size() / len(
+                self.df['PIC_TING'].dropna())}).reset_index().rename(
             columns={'PIC_TING': 'name', 'Percentage': 'y'})
         temp['name'] = temp['name'].astype(str).map(lambda x: x.replace('.0', '间'))
         return temp.to_json(orient='records', index=True)

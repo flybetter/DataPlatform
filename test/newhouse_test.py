@@ -3,6 +3,7 @@ from io import StringIO
 import numpy as np
 import os
 import hashlib
+import re
 
 
 def get_all_houses():
@@ -18,3 +19,9 @@ def get_all_houses():
 if __name__ == '__main__':
     # print(os.path.dirname(os.path.abspath(__file__)))
     print(hashlib.new('md5', '13305181837house365'.encode('utf-8')).hexdigest())
+    print(hashlib.new('md5', '13675184898house365'.encode('utf-8')).hexdigest())
+    print(hashlib.new('md5', '18013960786house365'.encode('utf-8')).hexdigest())
+    print(hashlib.new('md5', '19951953059house365'.encode('utf-8')).hexdigest())
+    print(hashlib.new('md5', '15212211618house365'.encode('utf-8')).hexdigest())
+
+    print(re.sub(u'[\u4E00-\u9FA5]', '', '约149.12万元'))
