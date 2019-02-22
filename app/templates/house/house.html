@@ -234,7 +234,9 @@
         </ul>
     </div>
     <div class="ub-f3 mapneed bggray">
-        <div class="tx-c">用户需求画像</div>
+        <div class="tx-c">用户需求画像
+            <button id="detail" onclick="detailPage()">详情</button>
+        </div>
         <ul>
             <li>总价范围：万</li>
             <li>户型范围：房</li>
@@ -286,6 +288,7 @@
         $("#user").after(user);
 
     })
+
 
     var href = window.location.href,
         url = window.location.pathname,
@@ -343,6 +346,11 @@
         }
         var key = '{{ secret }}'
         window.location.href = commonurl + mcity + "/" + mday + "?secret=" + key + "&&sort_key=" + filter;
+    }
+
+    function detailPage() {
+        var key = '{{ secret }}'
+        window.location.href = commonurl + city + "/" + day + "/detail?secret=" + key;
     }
 
     function FormatDate(strTime) {
