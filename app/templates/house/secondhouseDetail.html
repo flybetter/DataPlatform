@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>用户详细数据</title>
+</head>
+<body>
+<!-- 图表容器 DOM -->
+<table>
+    <tr>
+        <td>
+            <div id="container" style="width: 600px;height:400px;"></div>
+        </td>
+        <td>
+            <div id="container1" style="width: 600px;height:400px;"></div>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <div id="container2" style="width: 600px;height:400px;"></div>
+        </td>
+        <td>
+            <div id="container3" style="width: 600px;height:400px;"></div>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <div id="container4" style="width: 600px;height:400px;"></div>
+        </td>
+        <td>
+            <div id="container5" style="width: 600px;height:400px;"></div>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <div id="container6" style="width: 600px;height:400px;"></div>
+        </td>
+        <td>
+            <div id="container7" style="width: 600px;height:400px;"></div>
+        </td>
+    </tr>
+</table>
+{#<div id="container" style="width: 600px;height:400px;"></div>#}
+
+<button onclick="javascript :history.back(-1);">返回</button>
+<table border="border：1px">
+    <tr>
+        <td>次数</td>
+        <td>{{ count }}</td>
+    </tr>
+    <tr>
+        <td>均价</td>
+        <td>{{ avg_price }}</td>
+    </tr>
+    <tr>
+        <td>面积</td>
+        <td>{{ area }}</td>
+    </tr>
+    <tr>
+        <td>总价</td>
+        <td>{{ sum_price }}</td>
+    </tr>
+    <tr>
+        <td>卫生间</td>
+        <td>{{ toilet }}</td>
+    </tr>
+    <tr>
+        <td>房间</td>
+        <td>{{ bedroom }}</td>
+    </tr>
+    <tr>
+        <td>厅</td>
+        <td>{{ livingroom }}</td>
+    </tr>
+    <tr>
+        <td>厨房</td>
+        <td>{{ kitchen }}</td>
+    </tr>
+</table>
+
+<!-- 引入 highcharts.js -->
+<script src="http://cdn.hcharts.cn/highcharts/highcharts.js"></script>
+<script>
+    // 图表初始化函数
+    var chart = Highcharts.chart('container', {
+        chart: {
+            type: 'spline'
+        },
+        title: {
+            text: '用户点击频率'
+        },
+        //subtitle: {
+        //  text: '非规律性时间内的变化'
+        //},
+        xAxis: {
+            type: 'datetime',
+            {#title: {#}
+            {#    text: null#}
+            // }
+            tickInterval: 24 * 3600 * 1000,
+            //格式化时间，day,week....
+            dateTimeLabelFormats: {
+                day: '%m-%d'
+            }
+        },
+        {#colors: ['#6CF', '#39F', '#06C', '#036', '#000'],#}
+        yAxis: {
+            title: {
+                text: '次数'
+            },
+            min: 0
+        },
+        tooltip: {
+            headerFormat: '<b>{series.name}</b><br>',
+            {#pointFormat: '{point.x:%e. %b}: {point.y:.2f} m'#}
+            pointFormat: '{point.y:.2f}'
+        },
+        plotOptions: {
+            spline: {
+                marker: {
+                    enabled: true
+                }
+            }
+        },
+        series: [{
+            name: '频次',
+            // Define the data points. All series have a dummy year
+            // of 1970/71 in order to be compared on the same x axis. Note
+            // that in JavaScript, months start at 0 for January, 1 for February etc.
+            data: {{ click_frequency_diagram }}
+        }]
+    });
+
+    var chart = Highcharts.chart('container1', {
+        chart: {
+            type: 'bar'                          //指定图表的类型，默认是折线图（line）
+        },
+        title: {
+            text: '均价区间'                 // 标题
+        },
+        xAxis: {
+            categories: JSON.parse('{{ avg_price_histogram[0] }}'.replace(/&#34;/ig, '"'))// x 轴分类
+        },
+        yAxis: {
+            title: {
+                text: null             // y 轴标题
+            }
+        },
+        series: [{                              // 数据列
+            name: '点击次数',                        // 数据列名
+            data: {{ avg_price_histogram[1] }}                   // 数据
+        }]
+    });
+
+    var chart = Highcharts.chart('container2', {
+        chart: {
+            type: 'bar'                          //指定图表的类型，默认是折线图（line）
+        },
+        title: {
+            text: '总价区间'                 // 标题
+        },
+        xAxis: {
+            categories: JSON.parse('{{ sum_price_histogram[0] }}'.replace(/&#34;/ig, '"'))  // x 轴分类
+        },
+        yAxis: {
+            title: {
+                text: null               // y 轴标题
+            }
+        },
+        series: [{                              // 数据列
+            name: '点击次数',                        // 数据列名
+            data: {{ sum_price_histogram[1] }}                    // 数据
+        }]
+    });
+
+
+    var chart = Highcharts.chart('container3', {
+        chart: {
+            type: 'bar'                          //指定图表的类型，默认是折线图（line）
+        },
+        title: {
+            text: '房屋面积'                 // 标题
+        },
+        xAxis: {
+            categories: JSON.parse('{{ area_histogram[0] }}'.replace(/&#34;/ig, '"'))  // x 轴分类
+        },
+        yAxis: {
+            title: {
+                text: null               // y 轴标题
+            }
+        },
+        series: [{                              // 数据列
+            name: '点击次数',                        // 数据列名
+            data: {{ area_histogram[1] }}                    // 数据
+        }]
+    });
+
+    function htmlDecode(input) {
+        var e = document.createElement('div');
+        e.innerHTML = input;
+        // handle case of empty input
+        return e.childNodes.length === 0 ? "" : e.childNodes[0].nodeValue;
+    }
+
+
+    Highcharts.chart('container4', {
+        chart: {
+            plotBackgroundColor: null,
+            plotBorderWidth: null,
+            plotShadow: false,
+            type: 'pie'
+        },
+        title: {
+            text: '卫生间'
+        },
+        tooltip: {
+            pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
+        },
+        plotOptions: {
+            pie: {
+                allowPointSelect: true,
+                cursor: 'pointer',
+                dataLabels: {
+                    enabled: true,
+                    format: '<b>{point.name}</b>: {point.percentage:.1f} %',
+                    style: {
+                        color: (Highcharts.theme && Highcharts.theme.contrastTextColor) || 'black'
+                    }
+                }
+            }
+        },
+        series: [{
+            name: 'Brands',
+            colorByPoint: true,
+            data: JSON.parse(htmlDecode('{{ toilet_pie  }}'))
+        }]
+    });
+
+
+    Highcharts.chart('container5', {
+        chart: {
+            plotBackgroundColor: null,
+            plotBorderWidth: null,
+            plotShadow: false,
+            type: 'pie'
+        },
+        title: {
+            text: '卧室'
+        },
+        tooltip: {
+            pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
+        },
+        plotOptions: {
+            pie: {
+                allowPointSelect: true,
+                cursor: 'pointer',
+                dataLabels: {
+                    enabled: true,
+                    format: '<b>{point.name}</b>: {point.percentage:.1f} %',
+                    style: {
+                        color: (Highcharts.theme && Highcharts.theme.contrastTextColor) || 'black'
+                    }
+                }
+            }
+        },
+        series: [{
+            name: 'Brands',
+            colorByPoint: true,
+            data: JSON.parse(htmlDecode('{{ bedroom_pie  }}'))
+        }]
+    });
+
+
+    Highcharts.chart('container6', {
+        chart: {
+            plotBackgroundColor: null,
+            plotBorderWidth: null,
+            plotShadow: false,
+            type: 'pie'
+        },
+        title: {
+            text: '客厅'
+        },
+        tooltip: {
+            pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
+        },
+        plotOptions: {
+            pie: {
+                allowPointSelect: true,
+                cursor: 'pointer',
+                dataLabels: {
+                    enabled: true,
+                    format: '<b>{point.name}</b>: {point.percentage:.1f} %',
+                    style: {
+                        color: (Highcharts.theme && Highcharts.theme.contrastTextColor) || 'black'
+                    }
+                }
+            }
+        },
+        series: [{
+            name: 'Brands',
+            colorByPoint: true,
+            data: JSON.parse(htmlDecode('{{ livingroom_pie  }}'))
+        }]
+    });
+
+
+    Highcharts.chart('container7', {
+        chart: {
+            plotBackgroundColor: null,
+            plotBorderWidth: null,
+            plotShadow: false,
+            type: 'pie'
+        },
+        title: {
+            text: '厨房'
+        },
+        tooltip: {
+            pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
+        },
+        plotOptions: {
+            pie: {
+                allowPointSelect: true,
+                cursor: 'pointer',
+                dataLabels: {
+                    enabled: true,
+                    format: '<b>{point.name}</b>: {point.percentage:.1f} %',
+                    style: {
+                        color: (Highcharts.theme && Highcharts.theme.contrastTextColor) || 'black'
+                    }
+                }
+            }
+        },
+        series: [{
+            name: 'Brands',
+            colorByPoint: true,
+            data: JSON.parse(htmlDecode('{{ kitchen_pie  }}'))
+        }]
+    });
+
+</script>
+
+
+</body>
+</html>
