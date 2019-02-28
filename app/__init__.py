@@ -8,10 +8,10 @@ def create_app():
     def hello():
         return "hello world"
 
-    from .house import houses as house_blueprint
     from .newhouse import newhouses as newhouse_blueprint
-    app.register_blueprint(house_blueprint)
+    from .secondhouse import secondhouses as secondhouse_blueprint
     app.register_blueprint(newhouse_blueprint)
+    app.register_blueprint(secondhouse_blueprint)
     return app
 
 

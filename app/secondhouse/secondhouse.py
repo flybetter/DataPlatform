@@ -16,7 +16,7 @@ class secondhouse:
 
     def get_cities(self):
         try:
-            cities = self.df['CITY_NAME'].unique()
+            cities = self.df['CITY'].unique()
             return cities
         except Exception:
             print(traceback.format_exc())
@@ -24,10 +24,9 @@ class secondhouse:
 
     def get_price(self):
         try:
-            df = self.df[self.df['CITY_NAME'] == self.city]
-            df_price = df[df['PRICE_SHOW'].str.contains('元/㎡', na=False)]
-            min_price = min(df_price['PRICE_AVG'])
-            max_price = max(df_price['PRICE_AVG'])
+            df = self.df[self.df['CITY'] == self.city]
+            min_price = min(df['AVERPRICE_x'])
+            max_price = max(df['AVERPRICE_x'])
             return min_price, max_price
         except Exception:
             print(traceback.format_exc())
@@ -35,7 +34,7 @@ class secondhouse:
 
     def get_result(self):
         try:
-            df = self.df[self.df['CITY_NAME'] == self.city]
+            df = self.df[self.df['CITY'] == self.city]
             df_result = df.sort_values(by='START_TIME', ascending=False)
             df_count = df_result.groupby('CONTEXT_ID').size().reset_index(name='COUNT')
             df_order = df_result.groupby('CONTEXT_ID').nth(0)

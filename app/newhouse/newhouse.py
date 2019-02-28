@@ -1,27 +1,50 @@
-from . import newhouses
 import pandas as pd
-from io import StringIO
-import numpy as np
-from flask import render_template
-import os
-
-#demo
-@newhouses.route("/")
-def index():
-    newhouses_map = get_house_map()
-    return render_template("/newhouse_demo/newhouse_map.html", newhouses_map=newhouses_map)
+import json
+import traceback
 
 
+class newhouse:
+    def __init__(self, df, city='南京', sort_key=0):
+        """
+        :param df:
+        :param city:
+        :param sort_key: 0 是按点击次数排序 1 是按时间顺序排序
+        """
+        self.df = df
+        self.city = city
+        self.sort_key = int(sort_key)
 
-def get_house_map():
-    with open(os.path.dirname(os.path.abspath(__file__)) + os.sep + 'newHouse.txt') as f:
-        colName = ["PRJ_LISTID", "CHANNEL", "CITY", "CITY_NAME", "PRJ_ITEMNAME", "PRJ_LOC", "PRJ_DECORATE", "PRJ_VIEWS",
-                   "B_LNG", "B_LAT", "PRICE_AVG", "PRICE_SHOW"]
-        df = pd.read_csv(StringIO(f.read()), names=colName, header=None, delimiter="\t",
-                         dtype={'B_LNG': np.str, 'B_LAT': np.str, 'PRJ_LISTID': np.int64})
-        df = df[df["CITY"] == 'nj']
-    return df.to_json(orient='records', force_ascii=False)
+    def get_cities(self):
+        try:
+            cities = self.df['CITY_NAME'].unique()
+            return cities
+        except Exception:
+            print(traceback.format_exc())
+            return list()
 
+    def get_price(self):
+        try:
+            df = self.df[self.df['CITY_NAME'] == self.city]
+            df_price = df[df['PRICE_SHOW'].str.contains('元/㎡', na=False)]
+            min_price = min(df_price['PRICE_AVG'])
+            max_price = max(df_price['PRICE_AVG'])
+            return min_price, max_price
+        except Exception:
+            print(traceback.format_exc())
+            return 0, 0
 
-if __name__ == '__main__':
-    print(os.getcwd())
+    def get_result(self):
+        try:
+            df = self.df[self.df['CITY_NAME'] == self.city]
+            df_result = df.sort_values(by='START_TIME', ascending=False)
+            df_count = df_result.groupby('CONTEXT_ID').size().reset_index(name='COUNT')
+            df_order = df_result.groupby('CONTEXT_ID').nth(0)
+            datas = df_order.merge(df_count, how='left', on='CONTEXT_ID')
+            if self.sort_key == 0:
+                datas.sort_values(by='COUNT', ascending=False, inplace=True)
+            elif self.sort_key == 1:
+                datas.sort_values(by='START_TIME', ascending=False, inplace=True)
+            return datas
+        except Exception:
+            print(traceback.format_exc())
+            return {}
