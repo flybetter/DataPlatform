@@ -1,33 +1,24 @@
-from . import houses
-from flask import render_template, request
-from redis import Redis
-import json
-import pandas as pd
-import traceback
-from . import newhouse
-from . import newhouseDetail
-import hashlib
-from ..config import get_config
-
-r = Redis(host=get_config("REDIS_HOST"), port=6379, db=get_config("REDIS_DB"))
-# r2 = Redis(host='192.168.10.221', port=6379, db=2)
-
-NEWHOUSELOG_PREFIX = get_config("NEWHOUSELOG_PREFIX")
-PHONEDEVICE_PREFIX = get_config("PHONEDEVICE_PREFIX")
-
-
-# @houses.route("/<string:phone>/<string:city>/<int:num>", methods=['GET'])
-# def index(phone, num, city):
-#     deviceids = r.smembers(PHONEDEVICE_PREFIX + phone)
-#     result = list()
-#     for deviceid in deviceids:
-#         datas = r.lrange(NEWHOUSELOG_PREFIX + deviceid.decode('utf-8'), 0, num)
-#         for data in datas:
-#             result.extend(json.loads(data.decode('utf-8')))
+# from . import houses
+# from flask import render_template, request
+# from redis import Redis
+# import json
+# import pandas as pd
+# import traceback
+# from . import newhouse
+# from . import newhouseDetail
+# import hashlib
+# from ..config import get_config
+# from urllib import parse
 #
-#     cities, min_price, max_price, newhouses, newhouses_count = newhouse_handle(result, city)
-#     return render_template("house/house.html", newhouses=newhouses, userId=phone, num=num, cities=cities,
-#                            min_price=min_price, max_price=max_price, newhouses_count=newhouses_count)
+#
+# from app.tools.prpcrypt import PrpCrypt
+
+from app.house import *
+
+r = Redis(host=get_config('REDIS_HOST'), db=get_config("REDIS_DB"))
+
+
+# r2 = Redis(host='192.168.10.221', port=6379, db=2)
 
 
 @houses.route("/<string:phone>/<string:city>/<int:num>", methods=['GET'])
@@ -38,10 +29,10 @@ def index(phone, num, city):
         sort_key = 0
     m = hashlib.new('md5', (phone + 'house365').encode('utf-8')).hexdigest()
     if m == secret:
-        deviceids = r.smembers(PHONEDEVICE_PREFIX + phone)
+        deviceids = r.smembers(REDIS_PHONEDEVICE_PREFIX + phone)
         result = list()
         for deviceid in deviceids:
-            datas = r.lrange(NEWHOUSELOG_PREFIX + deviceid.decode('utf-8'), 0, num)
+            datas = r.lrange(REDIS_NEWHOUSE_PREFIX + deviceid.decode('utf-8'), 0, num)
             for data in datas:
                 result.extend(json.loads(data.decode('utf-8')))
 
@@ -52,30 +43,50 @@ def index(phone, num, city):
         min_price, max_price = object.get_price()
         newhouses = object.get_item_detail()
         newhouses_count = object.get_count()
+        newhouses_scatter_diagram = object.get_scatter_diagram()
 
         return render_template("house/house.html", newhouses=newhouses, userId=phone, num=num, cities=cities,
-                               min_price=min_price, max_price=max_price, newhouses_count=newhouses_count, secret=secret)
+                               min_price=min_price, max_price=max_price, newhouses_count=newhouses_count, secret=secret,
+                               newhouses_scatter_diagram=newhouses_scatter_diagram)
     else:
         return "the secret key is wrong"
 
 
-def newhouse_handle(newhouse_json, city='南京', sort_key=0):
-    try:
-        newhouse_json = json.dumps(newhouse_json, ensure_ascii=False)
-        df = pd.read_json(newhouse_json, orient='records')
-        count = len(df)
-        if count == 0:
-            return list(), 0, 0, {}, count
-        else:
-            object = newhouse.newhouse(df, city, sort_key)
-            cities = object.get_cities()
-            min_price, max_price = object.get_price()
-            datas = object.get_item_detail()
-            datas = datas.to_json(orient="records", force_ascii=False)
-        return cities, min_price, max_price, datas, count
-    except Exception:
-        print(traceback.format_exc())
-        return list(), 0, 0, {}, count
+# @houses.route("/api", methods=['GET'])
+# def houses_api():
+#     secret = request.args.get("secret_key")
+#     sort_key = request.args.get("sort_key")
+#     # 1,2,3,4
+#     phone = request.args.get("phone")
+#     city = request.args.get("city")
+#     days = request.args.get("days")
+#     if sort_key is None:
+#         sort_key = 0
+#     m = hashlib.new('md5', (phone + 'house365').encode('utf-8')).hexdigest()
+#     if m != secret:
+#         return "the secret key is wrong"
+#     else:
+#         pc = PrpCrypt()
+#         phone = pc.decrypt(phone)
+#         deviceids = r.smembers(REDIS_PHONEDEVICE_PREFIX + phone)
+#         result = list()
+#         for deviceid in deviceids:
+#             datas = r.lrange(REDIS_NEWHOUSE_PREFIX + deviceid.decode('utf-8'), 0, days)
+#             for data in datas:
+#                 result.extend(json.loads(data.decode('utf-8')))
+#
+#         newhouse_json = json.dumps(result, ensure_ascii=False)
+#         df = pd.read_json(newhouse_json, orient='records')
+#         object = newhouse.newhouse(df, city, sort_key)
+#         cities = object.get_cities()
+#         min_price, max_price = object.get_price()
+#         newhouses = object.get_item_detail()
+#         newhouses_count = object.get_count()
+#         newhouses_scatter_diagram = object.get_scatter_diagram()
+#
+#         return render_template("house/house.html", newhouses=newhouses, userId=phone, days=days, cities=cities,
+#                                min_price=min_price, max_price=max_price, newhouses_count=newhouses_count, secret=secret,
+#                                newhouses_scatter_diagram=newhouses_scatter_diagram)
 
 
 @houses.route("/<string:phone>/<string:city>/<int:num>/detail", methods=['GET'])
@@ -86,10 +97,10 @@ def detail(phone, num, city):
         sort_key = 0
     m = hashlib.new('md5', (phone + 'house365').encode('utf-8')).hexdigest()
     if m == secret:
-        deviceids = r.smembers(PHONEDEVICE_PREFIX + phone)
+        deviceids = r.smembers(REDIS_PHONEDEVICE_PREFIX + phone)
         result = list()
         for deviceid in deviceids:
-            datas = r.lrange(NEWHOUSELOG_PREFIX + deviceid.decode('utf-8'), 0, num)
+            datas = r.lrange(REDIS_NEWHOUSE_PREFIX + deviceid.decode('utf-8'), 0, num)
             for data in datas:
                 result.extend(json.loads(data.decode('utf-8')))
 
@@ -175,14 +186,15 @@ def newhouseDetail_handle(newhouse_json, city='南京', sort_key=0):
 
 
 if __name__ == '__main__':
-    deviceids = r.smembers('PD^15298383419')
-    result = list()
-    for deviceid in deviceids:
-        datas = r.lrange(NEWHOUSELOG_PREFIX + deviceid.decode('utf-8'), 0, 30)
-        for data in datas:
-            result.extend(json.loads(data.decode('utf-8')))
-
-    print(json.dump(result))
+    pass
+    # deviceids = r.smembers('PD^15298383419')
+    # result = list()
+    # for deviceid in deviceids:
+    #     datas = r.lrange(NEWHOUSELOG_PREFIX + deviceid.decode('utf-8'), 0, 30)
+    #     for data in datas:
+    #         result.extend(json.loads(data.decode('utf-8')))
+    #
+    # print(json.dump(result))
 
     # md5
     # m = hashlib.new('md5', ('18652058969house365').encode('utf-8')).hexdigest()

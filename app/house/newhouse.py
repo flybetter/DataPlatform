@@ -63,10 +63,6 @@ class newhouse:
 
     @decorator
     def get_scatter_diagram(self):
-        pd.to_numeric(
-            self.df['PIC_HX_TOTALPRICE'].astype(str).map(lambda x: re.sub(u'[\u4E00-\u9FA5]', '', x)),
-            errors='coerce')
-        return
-
-
-
+        self.df['PIC_HX_TOTALPRICE'] = self.df['PIC_HX_TOTALPRICE'].astype(str).map(
+            lambda x: re.sub(u'[\u4E00-\u9FA5]', '', x))
+        return self.df[['PIC_HX_TOTALPRICE', 'START_TIME']].to_json(orient="records", force_ascii=False)
