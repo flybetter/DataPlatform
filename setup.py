@@ -10,5 +10,6 @@ setup(
         'flask',
         'numpy',
         'pandas',
+        'pycryptodome',
     ]
 )

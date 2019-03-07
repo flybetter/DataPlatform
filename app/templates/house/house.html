@@ -115,7 +115,7 @@
             display: block;
             width: 1rem;
             height: 1rem;
-            background: url(../../../static/clock.png) center no-repeat;
+            background: url(../../../static/images/clock.png) center no-repeat;
             background-size: .8rem auto;
             float: left
         }
@@ -124,7 +124,7 @@
             display: block;
             width: 1rem;
             height: 1rem;
-            background: url(../../../static/eye.png) center no-repeat;
+            background: url(../../../static/images/eye.png) center no-repeat;
             background-size: .8rem auto;
             float: left
         }
@@ -206,9 +206,7 @@
     </script>
     <script type="text/javascript"
             src="http://api.map.baidu.com/library/Heatmap/2.0/src/Heatmap_min.js"></script>
-    {#    <script src="https://cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>#}
     <script src="http://apps.bdimg.com/libs/jquery/2.1.1/jquery.min.js"></script>
-    {#    <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>#}
 
 </head>
 
@@ -378,7 +376,7 @@
         var point = new BMap.Point(poi.B_LNG, poi.B_LAT);
         // 创建标注
         var marker = new BMap.Marker(point);
-        var myIcon = new BMap.Icon("../../../static/circle.png",
+        var myIcon = new BMap.Icon("../../../static/images/circle.png",
             new BMap.Size(25, 25));
         var marker = new BMap.Marker(point, {icon: myIcon});
 
