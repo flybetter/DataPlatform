@@ -46,7 +46,7 @@ class PrpCrypt(object):
 
 if __name__ == '__main__':
     pc = PrpCrypt()  # 初始化密钥
-    e = pc.encrypt('13800000007')  # 加密
+    e = pc.encrypt('13057593972')  # 加密
     print(e.decode('utf-8'))
     d = pc.decrypt(e)  # 解密
     print("加密:", e.decode('utf-8'))

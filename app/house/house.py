@@ -19,7 +19,8 @@ def index(phone, num, city):
                 result.extend(json.loads(data.decode('utf-8')))
 
         newhouse_json = json.dumps(result, ensure_ascii=False)
-        df = pd.read_json(newhouse_json, orient='records')
+        df = pd.read_json(newhouse_json, orient='records').dropna(subset=['B_LAT', 'B_LNG', 'PRJ_ITEMNAME'])
+        df.to_csv('demo.csv')
         object = newhouse.newhouse(df, city, sort_key)
         cities = object.get_cities()
         min_price, max_price = object.get_price()

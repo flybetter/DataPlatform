@@ -1,5 +1,7 @@
 from app.house import *
 from functools import wraps
+from urllib import parse
+from app.tools.IDInformation import IDInformation
 
 
 def decorator(func):
@@ -10,7 +12,7 @@ def decorator(func):
             return result
         except Exception as e:
             traceback.print_exc()
-            raise ValueError(func.__name__ + ' has something wronge')
+            raise ValueError(func.__name__ + ' has something wrong')
 
     return wrapper
 
@@ -30,6 +32,10 @@ class HOUSES(object):
         self.df = None
         self.max_price = None
         self.min_price = None
+        self.city_images = dict()
+        self.sex = None
+        self.age = None
+        self.show_phone = None
 
     @property
     def phone(self):
@@ -37,10 +43,13 @@ class HOUSES(object):
 
     @phone.setter
     def phone(self, phone_number):
-        self._phone = phone_number
-        pc = PrpCrypt()
-        e = pc.decrypt(self.phone)
-        self.real_phone = e
+        try:
+            self._phone = phone_number
+            pc = PrpCrypt()
+            e = pc.decrypt(self.phone)
+            self.real_phone = e
+        except Exception as e:
+            raise ValueError('house365 error: the phone encryption is error')
 
     @property
     def city(self):
@@ -48,8 +57,10 @@ class HOUSES(object):
 
     @city.setter
     def city(self, city_name):
-        # TODO
-        self._city = city_name
+        try:
+            self._city = parse.unquote(city_name)
+        except Exception as e:
+            raise ValueError('house365 error: the city URL encode is error')
 
     @property
     def days(self):
@@ -80,15 +91,14 @@ class HOUSES(object):
 
     def begin(self):
         result = dict()
-        result['phone'] = self.phone
-        result['phone_show'] = self.real_phone.replace(self.real_phone[3:7], '****')
-        images = self.redis_images_read()
-        if images is not None:
-            result.update(json.loads(images))
+        self.redis_images_read()
         self.redis_devices_read()
         self.redis_data_read()
         self.house_action()
         self.get_price()
+        self.show_phone = self.real_phone.replace(self.real_phone[3:7], '****')
+        result['phone'] = self.phone
+        result['phone_show'] = self.show_phone
         result['count'] = self.get_count()
         result['cities'] = self.get_cities()
         result['min_price'] = self.min_price
@@ -96,6 +106,9 @@ class HOUSES(object):
         result['secret_key'] = self.secret_key
         result['newhouses_scatter_diagram'] = self.get_scatter_diagram()
         result['newhouses'] = self.get_item_detail()
+        result['sex'] = self.sex
+        result['age'] = self.age
+        result.update(self.city_images)
         return result
 
     @decorator
@@ -104,10 +117,13 @@ class HOUSES(object):
         e = pc.dncrypt(self.phone)
         self.real_phone = e
 
-    @decorator
     def redis_images_read(self):
         city_images = self.crm_r.hget(REDIS_CRM_PREFIX + self.real_phone, self.city)
-        return city_images
+        if city_images is not None:
+            self.city_images = json.loads(city_images.decode('utf-8').replace("'", "\"").replace("nan", "null"))
+            if self.city_images['IDCard'] is not None:
+                self.sex = IDInformation(self.city_images['IDCard']).get_sex()
+                self.age = IDInformation(self.city_images['IDCard']).get_age()
 
     def redis_data_read(self):
         for deviceid in self.deviceIds:
@@ -124,7 +140,7 @@ class HOUSES(object):
 
     def house_action(self):
         newhouse_json = json.dumps(self.data, ensure_ascii=False)
-        self.df = pd.read_json(newhouse_json, orient='records')
+        self.df = pd.read_json(newhouse_json, orient='records').dropna(subset=['B_LAT', 'B_LNG', 'PRJ_ITEMNAME'])
 
     @decorator
     def get_cities(self):
@@ -134,8 +150,9 @@ class HOUSES(object):
     def get_price(self):
         df = self.df[self.df['CITY_NAME'] == self.city]
         df_price = df[df['PRICE_SHOW'].str.contains('元/㎡', na=False)]
-        self.min_price = min(df_price['PRICE_AVG'])
-        self.max_price = max(df_price['PRICE_AVG'])
+        if len(df_price) > 0:
+            self.min_price = min(df_price['PRICE_AVG'])
+            self.max_price = max(df_price['PRICE_AVG'])
 
     @decorator
     def get_item_detail(self):

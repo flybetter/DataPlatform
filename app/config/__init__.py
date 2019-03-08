@@ -1,7 +1,7 @@
 import configparser
 import os
 
-ENV = 'production'
+ENV = 'develop'
 
 
 def get_config(name):
