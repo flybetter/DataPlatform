@@ -2,6 +2,23 @@ from app.house import *
 from app.house.housesEnity import HOUSES
 
 
+@houses_v1.route("/index", methods=['GET'])
+def houses_index():
+    secret_key = request.args.get("secret_key")
+    phone = request.args.get("phone")
+    city = request.args.get("city")
+    try:
+        houses_entity = HOUSES()
+        houses_entity.phone = phone
+        houses_entity.city = city
+    except Exception as e:
+        traceback.print_exc()
+
+    return render_template("house/house.html", secret_key=secret_key, phone=houses_entity.phone,
+                           show_phone=houses_entity.show_phone,
+                           city=houses_entity.city)
+
+
 @houses_v1.route("/api", methods=['GET'])
 def houses_api():
     secret_key = request.args.get("secret_key")
