@@ -1,5 +1,5 @@
 from flask import Blueprint
-from flask import render_template, request
+from flask import render_template, request,jsonify
 from redis import Redis
 import json
 import pandas as pd
@@ -10,7 +10,7 @@ from app.tools.prpcrypt import PrpCrypt
 from urllib import parse
 from app.config import get_config
 import re
-
+import traceback
 
 REDIS_HOST = get_config('REDIS_HOST')
 REDIS_DB = get_config("REDIS_DB")
@@ -43,5 +43,3 @@ houses_v1 = Blueprint('houses_v1', __name__, url_prefix='/v1/houses')
 
 from . import housesController
 from . import house
-
-

@@ -1,6 +1,5 @@
 from app.house import *
 from functools import wraps
-import traceback
 
 
 def decorator(func):
@@ -16,9 +15,10 @@ def decorator(func):
     return wrapper
 
 
-class HOUSES:
+class HOUSES(object):
     def __init__(self):
         self._phone = None
+        self.real_phone = None
         self._city = None
         self._days = None
         self._secret_key = None
@@ -35,27 +35,26 @@ class HOUSES:
     def phone(self):
         return self._phone
 
-    @decorator
     @phone.setter
     def phone(self, phone_number):
-        # prpcrypt = PrpCrypt()
-        # self._phone = prpcrypt.decrypt(phone_number.encode('utf-8')).decode
         self._phone = phone_number
+        pc = PrpCrypt()
+        e = pc.decrypt(self.phone)
+        self.real_phone = e
 
     @property
     def city(self):
         return self._city
 
-    @decorator
     @city.setter
     def city(self, city_name):
-        self._city = parse(city_name)
+        # TODO
+        self._city = city_name
 
     @property
     def days(self):
         return self._days
 
-    @decorator
     @days.setter
     def days(self, days_num):
         self._days = days_num
@@ -64,19 +63,17 @@ class HOUSES:
     def secret_key(self):
         return self._secret_key
 
-    @decorator
     @secret_key.setter
     def secret_key(self, secret_key_value):
-        m = hashlib.new('md5', (self._phone + 'house365').encode('utf-8')).hexdigest()
+        m = hashlib.new('md5', (self.real_phone + 'house365').encode('utf-8')).hexdigest()
         if secret_key_value != m:
-            raise ValueError(" secret_key is wrong")
+            raise ValueError(" house365 error: the secret key is error ")
         self._secret_key = secret_key_value
 
     @property
     def sorted_key(self):
         return self._sorted_key
 
-    @decorator
     @sorted_key.setter
     def sorted_key(self, sorted_key_value):
         self._sorted_key = sorted_key_value
@@ -84,10 +81,10 @@ class HOUSES:
     def begin(self):
         result = dict()
         result['phone'] = self.phone
-        # TODO
-        result['phone_show'] = self.phone.replace(self.phone[3:7], '****')
-        # images = self.redis_images_read()
-        # result.extend(json.loads(images))
+        result['phone_show'] = self.real_phone.replace(self.real_phone[3:7], '****')
+        images = self.redis_images_read()
+        if images is not None:
+            result.update(json.loads(images))
         self.redis_devices_read()
         self.redis_data_read()
         self.house_action()
@@ -102,8 +99,14 @@ class HOUSES:
         return result
 
     @decorator
+    def decrytion(self):
+        pc = PrpCrypt()
+        e = pc.dncrypt(self.phone)
+        self.real_phone = e
+
+    @decorator
     def redis_images_read(self):
-        city_images = self.crm_r.hget(REDIS_CRM_PREFIX + self.phone, self.city)
+        city_images = self.crm_r.hget(REDIS_CRM_PREFIX + self.real_phone, self.city)
         return city_images
 
     def redis_data_read(self):
@@ -111,9 +114,13 @@ class HOUSES:
             datas = self.office_r.lrange(REDIS_NEWHOUSE_PREFIX + deviceid.decode('utf-8'), 0, self.days)
             for data in datas:
                 self.data.extend(json.loads(data.decode('utf-8')))
+        if len(self.data) == 0:
+            raise ValueError(" house365 error: this phone number has no record ")
 
     def redis_devices_read(self):
-        self.deviceIds = self.office_r.smembers(REDIS_PHONEDEVICE_PREFIX + self.phone)
+        self.deviceIds = self.office_r.smembers(REDIS_PHONEDEVICE_PREFIX + self.real_phone)
+        if len(self.deviceIds) == 0:
+            raise ValueError(" house365 error: this phone number has no corresponding device number ")
 
     def house_action(self):
         newhouse_json = json.dumps(self.data, ensure_ascii=False)

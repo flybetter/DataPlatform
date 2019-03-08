@@ -21,38 +21,12 @@ def houses_api():
         result['result'] = int(1)
         result['data'] = data
     except Exception as e:
+        traceback.print_exc()
         result['result'] = 0
         result['msg'] = str(e)
 
-    return json.dumps(result, ensure_ascii=False)
+    return jsonify(result)
 
-
-# m = hashlib.new('md5', (phone + 'house365').encode('utf-8')).hexdigest()
-# if m != secret:
-#     return "the secret key is wrong"
-# else:
-#     pc = PrpCrypt()
-#     phone = pc.decrypt(phone)
-#     deviceids = r.smembers(REDIS_PHONEDEVICE_PREFIX + phone)
-#     result = list()
-#     for deviceid in deviceids:
-#         datas = r.lrange(REDIS_NEWHOUSE_PREFIX + deviceid.decode('utf-8'), 0, days)
-#         for data in datas:
-#             result.extend(json.loads(data.decode('utf-8')))
-#
-#     newhouse_json = json.dumps(result, ensure_ascii=False)
-#     df = pd.read_json(newhouse_json, orient='records')
-#     object = newhouse.newhouse(df, city, sort_key)
-#     cities = object.get_cities()
-#     min_price, max_price = object.get_price()
-#     newhouses = object.get_item_detail()
-#     newhouses_count = object.get_count()
-#     newhouses_scatter_diagram = object.get_scatter_diagram()
-#
-#     return render_template("house/house.html", newhouses=newhouses, userId=phone, days=days, cities=cities,
-#                            min_price=min_price, max_price=max_price, newhouses_count=newhouses_count,
-#                            secret=secret,
-#                            newhouses_scatter_diagram=newhouses_scatter_diagram)
 
 if __name__ == '__main__':
     pass
