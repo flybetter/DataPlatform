@@ -18,7 +18,7 @@ def URL_encode_encryption(city):
 
 
 if __name__ == '__main__':
-    phone = '13611572818'
+    phone = '13236527011'
     city = '南京'
     v1 = md5_algorithm(phone)
     v2 = AES_algorithm_encryption(phone).decode('utf-8')

@@ -14,7 +14,7 @@ def houses_index():
     except Exception as e:
         traceback.print_exc()
 
-    return render_template("house/house.html", secret_key=secret_key, phone=houses_entity.phone,
+    return render_template("house_v1/house.html", secret_key=secret_key, phone=houses_entity.phone,
                            show_phone=houses_entity.show_phone,
                            city=houses_entity.city)
 

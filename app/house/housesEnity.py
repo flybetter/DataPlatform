@@ -48,6 +48,7 @@ class HOUSES(object):
             pc = PrpCrypt()
             e = pc.decrypt(self.phone)
             self.real_phone = e
+            self.show_phone = self.real_phone.replace(self.real_phone[3:7], '****')
         except Exception as e:
             raise ValueError('house365 error: the phone encryption is error')
 
@@ -96,7 +97,6 @@ class HOUSES(object):
         self.redis_data_read()
         self.house_action()
         self.get_price()
-        self.show_phone = self.real_phone.replace(self.real_phone[3:7], '****')
         result['phone'] = self.phone
         result['phone_show'] = self.show_phone
         result['count'] = self.get_count()
