@@ -108,6 +108,8 @@ class HOUSES(object):
         result['newhouses'] = self.get_item_detail()
         result['sex'] = self.sex
         result['age'] = self.age
+        result['days'] = self.days
+        result['city'] = self.city
         result.update(self.city_images)
         return result
 
@@ -161,13 +163,13 @@ class HOUSES(object):
         df_count = df_result.groupby('CONTEXT_ID').size().reset_index(name='COUNT')
         df_order = df_result.groupby('CONTEXT_ID').nth(0)
         datas = df_order.merge(df_count, how='left', on='CONTEXT_ID')
-        if self.sorted_key == 0:
+        if self.sorted_key == str(0):
             datas.sort_values(by='COUNT', ascending=False, inplace=True)
-        elif self.sorted_key == 1:
+        elif self.sorted_key == str(1):
             datas.sort_values(by='COUNT', inplace=True)
-        elif self.sorted_key == 2:
+        elif self.sorted_key == str(2):
             datas.sort_values(by='START_TIME', ascending=False, inplace=True)
-        elif self.sorted_key == 3:
+        elif self.sorted_key == str(3):
             datas.sort_values(by='START_TIME', inplace=True)
         data = datas[['B_LNG', 'B_LAT', 'START_TIME', 'COUNT', 'PRJ_ITEMNAME', 'PRICE_SHOW']].to_json(orient="records",
                                                                                                       force_ascii=False)
