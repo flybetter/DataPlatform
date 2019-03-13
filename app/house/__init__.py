@@ -1,8 +1,9 @@
 from flask import Blueprint
-from flask import render_template, request,jsonify
+from flask import render_template, request, jsonify
 from redis import Redis
 import json
 import pandas as pd
+import numpy as np
 import traceback
 import hashlib
 
@@ -32,6 +33,7 @@ REDIS_SECONDHOUSE_PREFIX = get_config('REDIS_SECONDHOUSE_PREFIX')
 
 # CRM
 REDIS_CRM_DB = get_config('REDIS_CRM_DB')
+REDIS_CRM_HOST = get_config('REDIS_CRM_HOST')
 REDIS_CRM_PREFIX = get_config('REDIS_CRM_PREFIX')
 FILE_CRM_USER_PATH = get_config('FILE_CRM_USER_PATH')
 

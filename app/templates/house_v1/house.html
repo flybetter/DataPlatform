@@ -128,7 +128,7 @@
             border-top: 1px dashed #d5d5d5;
         }
 
-        .sideul li:nth-child(-n + 3){
+        .sideul li.bold{
             font-weight: bolder;
         }
 
@@ -318,10 +318,14 @@
             text-indent: 0.8em;
         }
     </style>
+
     <script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=N32lyWhU7RfjrFD76cYt6jmCHGWbicbd">
+
     </script>
     <script type="text/javascript" src="http://api.map.baidu.com/library/Heatmap/2.0/src/Heatmap_min.js"></script>
+    {# <script src="https://cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>#}
     <script src="http://apps.bdimg.com/libs/jquery/2.1.1/jquery.min.js"></script>
+    {# <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>#}
     <script src="../../../static/js/jquery.nicescroll.min.js?ver=1"></script>
     <script src="https://img.highcharts.com.cn/highcharts/highcharts.js"></script>
     <script src="https://img.hcharts.cn/highcharts-plugins/highcharts-zh_CN.js"></script>
@@ -334,8 +338,8 @@
         <div class="tab">访问详情</div>
         <select id="changeCity" class="selectChange"></select>
         <select id="changeDay" class="selectChange">
-            <option value="7">最近7天</option>
             <option value="30">最近30天</option>
+            <option value="7">最近7天</option>
         </select>
         <div class="panel-item">
             <div class="panel-1-wrap" style="height:100%;width: 100%">
@@ -348,12 +352,12 @@
             </div>
         </div>
         <div class="panel-item" style="display:none">
-            <div class="p-title">共1000条访问记录</div>
+            <div class="p-title">共<span class="count"></span>条访问记录</div>
             <div class="mapdiv">
                 <div class="ub filter">
                     <div class="paixu-text">排序：</div>
                     <div class="ub-f1 time">访问时间<em></em></div>
-                    <div class="ub-f1 count">访问次数<em></em></div>
+                    <div class="ub-f1 count active">访问次数<em></em></div>
                 </div>
                 <ul id="history-map-div" class="sideul">
 
@@ -383,9 +387,9 @@
                 data: {
                     phone: '{{phone}}',
                     city: '{{city}}',
-                    days: '7',
+                    days: '30',
                     secret_key: '{{secret_key}}',
-                    sorted_key: '1'
+                    sorted_key: '0'
                 },
                 success: function (resp) {
                     renderResp(resp);
@@ -408,11 +412,12 @@
                 }
                 var newhouses_scatter_diagram = JSON.parse(json.data.newhouses_scatter_diagram);
                 var now = new Date();
+                var maxday = $('#changeDay').val();
                 for (var index = 0; index < newhouses_scatter_diagram.length; index++) {
                     var ttime = new Date(newhouses_scatter_diagram[index].START_TIME);
                     var day = parseInt(Math.abs(now - ttime) / 1000 / 60 / 60 /24)
                     newhouses_scatter_diagram[index] = [
-                        day,
+                        maxday - day + 1,
                         parseFloat(newhouses_scatter_diagram[index].PIC_HX_TOTALPRICE)
                     ];
                 }
@@ -427,6 +432,7 @@
                 }
                 $('#changeCity').html(optionHtml);
                 $('#changeCity').val('{{city}}');
+                $('.p-title .count').html(data.count);
 
                 renderDetailLi(newhouses);
 
@@ -442,21 +448,53 @@
                 if (data.age) {
                     $('.user-info').append('<div class="info-item"><span class="label">年龄：</span><span class="content">' + data.age + '</span></div>')
                 }
-                if (data.sum_price) {
-                    $('.user-info').append('<div class="info-item"><span class="label">意向总价：</span><span class="content">' + data.sum_price + '万</span></div>')
+                if (true) {
+                    var title = '总次数 = 总价浏览次数 + 均价 & 面积的次数（备注：总次数即为“有总价”或者“均价和面积都有”）\n总价 = (总价求和 + 均价 * 面积) / 总次数'; ;
+                    var tempStr = '';
+                    if (data.sum_price) {
+                        tempStr = Math.ceil(data.sum_price) + '万';
+                    }
+                    $('.user-info').append('<div class="info-item" title="' + title + '"><span class="label">意向总价：</span><span class="content">' + tempStr + '</span></div>')
                 }
-                if (data.area) {
-                    $('.user-info').append('<div class="info-item"><span class="label">意向面积：</span><span class="content">' + data.area + '平方</span></div>')
+                if (true) {
+                    var title = '面积 = 总价 / 均价';
+                    var tempStr = '';
+                    if (data.area) {
+                        tempStr = Math.ceil(data.area) + '平方';
+                    }
+                    $('.user-info').append('<div class="info-item" title="' + title + '"><span class="label">意向面积：</span><span class="content">' + tempStr + '</span></div>')
                 }
-                if (data.bedroom) {
-                    $('.user-info').append('<div class="info-item"><span class="label">意向户型：</span><span class="content">' + data.bedroom + '室</span></div>')
+                if (true) {
+                    var title = '户型 = 户型求和 / 次数';
+                    var tempStr = '';
+                    if (data.bedroom) {
+                        tempStr = Math.ceil(data.bedroom) + '室';
+                    }
+                    $('.user-info').append('<div class="info-item" title="' + title + '"><span class="label">意向户型：</span><span class="content">' + tempStr + '</span></div>')
                 }
-                if (data.avg_price) {
-                    $('.user-info').append('<div class="info-item"><span class="label">意向均价：</span><span class="content">' + data.avg_price + '元/平米</span></div>')
+                if (true) {
+                    var title = '均价 = 均价求和 / 均价次数（备注：此处均价次数是有均价的次数和）';
+                    var tempStr = '';
+                    if (data.avg_price) {
+                        tempStr = Math.ceil(data.avg_price) + '元/平米';
+                    }
+                    $('.user-info').append('<div class="info-item" title="' + title + '"><span class="label">意向均价：</span><span class="content">' + tempStr + '</span></div>')
                 }
                 // 渲染散点图
                 if (chartSan) {
+                    if (maxday == 7) {
+                        temptickAmount = 8;
+                        temptickInterval = 1;
+                    } else {
+                        temptickAmount = 7;
+                        temptickInterval = 5;
+                    }
                     chartSan.update({
+                        xAxis:[{
+                            max:maxday,
+                            tickAmount: temptickAmount,
+                            tickInterval: temptickInterval
+                        }],
                         series: [{
                             data: newhouses_scatter_diagram
                         }]
@@ -482,7 +520,12 @@
                             //eaeaea
                             gridLineColor:'#eaeaea',
                             gridLineWidth:1,
-                            lineColor:'#c3c3c3'
+                            lineColor:'#c3c3c3',
+                            max: maxday,
+                            min:0,
+                            // startOnTick: false,
+                            tickAmount:7,
+                            tickInterval:5
                         }],
                         yAxis: [{
                             title:{
@@ -522,7 +565,7 @@
                                 },
                                 tooltip: {
                                     // headerFormat: '<b>{series.name}</b><br>',
-                                    pointFormat: '前{point.x}天,总价：{point.y} 万元'
+                                    pointFormat: '第{point.x}天,总价：{point.y} 万元'
                                 }
                             }
                         },
@@ -605,8 +648,13 @@
                     var point = new BMap.Point(poi.B_LNG, poi.B_LAT);
                     // 创建标注
                     var marker = new BMap.Marker(point);
-                    var myIcon = new BMap.Icon("../../../static/images/circle.png",
-                        new BMap.Size(25, 25));
+                    if (poi.COUNT < 6) {
+                        var myIcon = new BMap.Icon("../../../static/images/circle.png", new BMap.Size(25, 25));
+                    } else if(poi.COUNT < 21) {
+                        var myIcon = new BMap.Icon("../../../static/images/circle-middle.png", new BMap.Size(36, 36));
+                    } else {
+                        var myIcon = new BMap.Icon("../../../static/images/circle-big.png", new BMap.Size(50, 50));
+                    }
                     var marker = new BMap.Marker(point, {
                         icon: myIcon
                     });
@@ -660,14 +708,19 @@
             function renderDetailLi(newhouses) {
                 var historyHtml = '';
                 for (var k = 0; k < newhouses.length; k++) {
-                    historyHtml += '<li>';
+                    if (newhouses[k].COUNT > 10) {
+                        historyHtml += '<li class="bold">';
+                    } else {
+                        historyHtml += '<li>';
+                    }
                     historyHtml += '<div class="line1">';
                     historyHtml += '<div class="left">' + FormatDate(newhouses[k].START_TIME) + '</div>';
                     historyHtml += '<div class="right">' + newhouses[k].COUNT + '次</div>';
                     historyHtml += '</div>';
                     historyHtml += '<div class="line2">';
                     historyHtml += '<div class="left">' + newhouses[k].PRJ_ITEMNAME + '</div>';
-                    historyHtml += '<div class="right">' + newhouses[k].PRICE_SHOW + '</div>';
+                    var price = newhouses[k].PRICE_SHOW || '未知';
+                    historyHtml += '<div class="right">' + price + '</div>';
                     historyHtml += '</div>';
                     historyHtml += '</li>';
                 }
@@ -730,6 +783,23 @@
                 })
             })
         });
+
+
+        // var href = window.location.href,
+        //     url = window.location.pathname,
+        //     hostname = window.location.hostname,
+        //     protocol = window.location.protocol,
+        //     port = window.location.port;
+        // url = decodeURI(url);
+        // urlleft = url.substring(0, url.lastIndexOf("/"));
+        // day = url.substring(url.lastIndexOf("/") + 1);
+        // urlphone = urlleft.substring(0, urlleft.lastIndexOf("/"));
+        // city = urlleft.substring(urlleft.lastIndexOf("/") + 1);
+        // href = decodeURI(href);
+        // arrObj = href.substring(href.lastIndexOf("&&") + 2);
+        // arrObj = arrObj.split("=");
+        // filter = arrObj[1];
+        // commonurl = protocol + "//" + hostname + ":" + port + urlphone + "/";
 
         function FormatDate(strTime) {
             strTime = strTime - 28800000;

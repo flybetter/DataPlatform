@@ -28,7 +28,7 @@ class HOUSES(object):
         self.deviceIds = None
         self.data = list()
         self.office_r = Redis(host=REDIS_HOST, db=REDIS_DB)
-        self.crm_r = Redis(host=REDIS_HOST, db=REDIS_CRM_DB)
+        self.crm_r = Redis(host=REDIS_CRM_HOST, db=REDIS_CRM_DB)
         self.df = None
         self.max_price = None
         self.min_price = None
@@ -179,10 +179,21 @@ class HOUSES(object):
     def get_count(self):
         return len(self.df)
 
+    @staticmethod
+    def get_sum_price(sum_price, area, avg_price):
+        if pd.notna(sum_price):
+            return re.sub(u'[\u4E00-\u9FA5]', '', str(sum_price))
+        elif pd.notna(area) and pd.notna(avg_price):
+            return area * avg_price / 10000
+        else:
+            return np.NAN
+
     @decorator
     def get_scatter_diagram(self):
-        df = self.df.dropna(subset=['PIC_HX_TOTALPRICE'])
-        df['PIC_HX_TOTALPRICE'] = df['PIC_HX_TOTALPRICE'].astype(str).map(
-            lambda x: re.sub(u'[\u4E00-\u9FA5]', '', x))
-        return df[['PIC_HX_TOTALPRICE', 'START_TIME']].to_json(orient="records",
-                                                               force_ascii=False)
+        diagram_df = self.df
+        diagram_df['PIC_HX_TOTALPRICE'] = diagram_df.apply(
+            lambda x: HOUSES.get_sum_price(x['PIC_HX_TOTALPRICE'], x['PIC_AREA'],
+                                           x['PRICE_AVG']), axis=1)
+        diagram_df = diagram_df.dropna(subset=['PIC_HX_TOTALPRICE'])
+        return diagram_df[['PIC_HX_TOTALPRICE', 'START_TIME']].to_json(orient="records",
+                                                                       force_ascii=False)
