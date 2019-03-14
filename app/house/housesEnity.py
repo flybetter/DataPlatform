@@ -190,8 +190,8 @@ class HOUSES(object):
 
     @decorator
     def get_scatter_diagram(self):
-        diagram_df = self.df
-        diagram_df['PIC_HX_TOTALPRICE'] = diagram_df.apply(
+        diagram_df = self.df.copy()
+        diagram_df.loc['PIC_HX_TOTALPRICE'] = diagram_df.apply(
             lambda x: HOUSES.get_sum_price(x['PIC_HX_TOTALPRICE'], x['PIC_AREA'],
                                            x['PRICE_AVG']), axis=1)
         diagram_df = diagram_df.dropna(subset=['PIC_HX_TOTALPRICE'])
