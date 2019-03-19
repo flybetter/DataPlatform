@@ -111,7 +111,14 @@ class HOUSES(object):
         result['days'] = self.days
         result['city'] = self.city
         result.update(self.city_images)
+        self.buried_point(result)
         return result
+
+    def buried_point(self, result):
+        if 'source' in session:
+            BuriedPoint.BuriedPoint.begin(self.real_phone, self.city, session['source'], session['source_id'], result)
+            session.pop('source')
+            session.pop('source_id')
 
     @decorator
     def decrytion(self):

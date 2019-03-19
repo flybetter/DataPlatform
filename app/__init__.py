@@ -1,4 +1,8 @@
 from flask import Flask
+from multiprocessing import Queue
+
+
+# sql_queue = Queue()
 
 
 def create_app():
@@ -10,10 +14,9 @@ def create_app():
 
     from .house import houses as house_blueprint
     from .house import houses_v1 as houses_v1_blueprint
-    from .newhouse import newhouses as newhouse_blueprint
     app.register_blueprint(house_blueprint)
     app.register_blueprint(houses_v1_blueprint)
-    app.register_blueprint(newhouse_blueprint)
+    app.config['SECRET_KEY'] = '365house'
     return app
 
 

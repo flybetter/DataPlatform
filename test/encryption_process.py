@@ -25,7 +25,8 @@ if __name__ == '__main__':
     phones.append('13003423756')
     phones.append('13016972890')
     phones.append('13148493156')
-    # temp_url = "192.168.10.221:8000"
+    phones.append('18005151618')
+    # temp_url = "192.168.10.221:5000"
     temp_url = "127.0.0.1:5000"
 
     for simple in phones:
@@ -40,12 +41,12 @@ if __name__ == '__main__':
         # print(md5_algorithm(simple))
         # print(AES_algorithm_encryption(simple).decode('utf-8'))
         # print(URL_encode_encryption(city))
-        # print(
-        #     "http://" + temp_url + ":8000/v1/houses/api?phone={0}&city={1}&days=30&secret_key={2}&sorted_key=1".format(
-        #         v2, v3,
-        #         v1))
-        # print("http://" + temp_url + ":8000/houses/{0}/{1}/30?secret={2}".format(simple, v3, v1))
+        print(
+            "http://" + temp_url + "/v1/houses/api?phone={0}&city={1}&days=30&secret_key={2}&sorted_key=1&source=1&source_id=3232".format(
+                v2, v3,
+                v1))
+        # print("http://" + temp_url + "/houses/{0}/{1}/30?secret={2}".format(simple, v3, v1))
 
-        print("http://" + temp_url + "/v1/houses/index?phone={0}&city={1}&secret_key={2}".format(v2, v3, v1))
+        print("http://" + temp_url + "/v1/houses/index?phone={0}&city={1}&secret_key={2}&source=1&source_id=3232".format(v2, v3, v1))
 
         print("")

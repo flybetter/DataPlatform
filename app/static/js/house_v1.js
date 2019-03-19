@@ -23,8 +23,11 @@ $(function () {
         }
     })
 
-    function renderResp(json) {
+    function renderResp(json, flag = false) {
         // 准备数据开始
+        if (flag) {
+            city = $('#changeCity').val()
+        }
         var newhouses = JSON.parse(json.data.newhouses);
         var data = json.data;
         var sortednewhouses = newhouses.slice().sort(function (a, b) {
@@ -328,7 +331,7 @@ $(function () {
                 sorted_key: sorted_key
             },
             success: function (resp) {
-                renderResp(resp);
+                renderResp(resp, true);
             }
         })
     })
