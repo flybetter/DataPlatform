@@ -36,6 +36,7 @@ class HOUSES(object):
         self.sex = None
         self.age = None
         self.show_phone = None
+        self.count = None
 
     @property
     def phone(self):
@@ -99,13 +100,13 @@ class HOUSES(object):
         self.get_price()
         result['phone'] = self.phone
         result['phone_show'] = self.show_phone
-        result['count'] = self.get_count()
         result['cities'] = self.get_cities()
         result['min_price'] = self.min_price
         result['max_price'] = self.max_price
         result['secret_key'] = self.secret_key
         result['newhouses_scatter_diagram'] = self.get_scatter_diagram()
         result['newhouses'] = self.get_item_detail()
+        result['count'] = self.count
         result['sex'] = self.sex
         result['age'] = self.age
         result['days'] = self.days
@@ -136,7 +137,7 @@ class HOUSES(object):
 
     def redis_data_read(self):
         for deviceid in self.deviceIds:
-            datas = self.office_r.lrange(REDIS_NEWHOUSE_PREFIX + deviceid.decode('utf-8'), 0, self.days)
+            datas = self.office_r.lrange(REDIS_NEWHOUSE_PREFIX + deviceid.decode('utf-8'), 0, 30)
             for data in datas:
                 self.data.extend(json.loads(data.decode('utf-8')))
         if len(self.data) == 0:
@@ -158,14 +159,18 @@ class HOUSES(object):
 
     def get_price(self):
         df = self.df[self.df['CITY_NAME'] == self.city]
-        df_price = df[df['PRICE_SHOW'].str.contains('元/㎡', na=False)]
-        if len(df_price) > 0:
-            self.min_price = min(df_price['PRICE_AVG'])
-            self.max_price = max(df_price['PRICE_AVG'])
+        df = df.dropna(subset=['PRICE_SHOW']).copy()
+        if len(df) > 0:
+            df_price = df[df['PRICE_SHOW'].str.contains('元/㎡', na=False)]
+            if len(df_price) > 0:
+                self.min_price = min(df_price['PRICE_AVG'])
+                self.max_price = max(df_price['PRICE_AVG'])
 
     @decorator
     def get_item_detail(self):
         df = self.df[self.df['CITY_NAME'] == self.city]
+        df = self.days_calculator(df)
+        self.count = len(df)
         df_result = df.sort_values(by='START_TIME', ascending=False)
         df_count = df_result.groupby('CONTEXT_ID').size().reset_index(name='COUNT')
         df_order = df_result.groupby('CONTEXT_ID').nth(0)
@@ -178,9 +183,15 @@ class HOUSES(object):
             datas.sort_values(by='START_TIME', ascending=False, inplace=True)
         elif self.sorted_key == str(3):
             datas.sort_values(by='START_TIME', inplace=True)
+
         data = datas[['B_LNG', 'B_LAT', 'START_TIME', 'COUNT', 'PRJ_ITEMNAME', 'PRICE_SHOW']].to_json(orient="records",
                                                                                                       force_ascii=False)
         return data
+
+    def days_calculator(self, datas):
+        boundary = datetime.now() - timedelta(days=int(self.days))
+        datas = datas[datas['START_TIME'] > boundary].copy()
+        return datas
 
     @decorator
     def get_count(self):
@@ -204,3 +215,9 @@ class HOUSES(object):
         diagram_df = diagram_df.dropna(subset=['PIC_HX_TOTALPRICE'])
         return diagram_df[['PIC_HX_TOTALPRICE', 'START_TIME']].to_json(orient="records",
                                                                        force_ascii=False)
+
+
+if __name__ == '__main__':
+    boundary = datetime.now() - timedelta(days=30)
+    un_time = time.mktime(boundary.timetuple())
+    print(un_time)

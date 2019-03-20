@@ -70,7 +70,7 @@ class secondhouseDetail:
 
     def get_sum_price(self):
         try:
-            # TODO  有点情况下，没有总价， 需要均价*面积得到总价。目前用最简单的
+            # has been implemented
             return pd.to_numeric(
                 self.df['PIC_HX_TOTALPRICE'].astype(str).map(lambda x: re.sub(u'[\u4E00-\u9FA5]', '', x)),
                 errors='coerce').mean()

@@ -26,8 +26,15 @@ if __name__ == '__main__':
     phones.append('13016972890')
     phones.append('13148493156')
     phones.append('18005151618')
-    # temp_url = "192.168.10.221:5000"
-    temp_url = "127.0.0.1:5000"
+    phones.append('13301596858')
+    # 异常数据
+    phones.append('13337813226')
+    phones.append('13404162426')
+
+
+    temp_url = "192.168.10.221:5000"
+    # temp_url = "192.168.10.221:8000"
+    # temp_url = "127.0.0.1:5000"
 
     for simple in phones:
         city = '南京'
@@ -47,6 +54,8 @@ if __name__ == '__main__':
                 v1))
         # print("http://" + temp_url + "/houses/{0}/{1}/30?secret={2}".format(simple, v3, v1))
 
-        print("http://" + temp_url + "/v1/houses/index?phone={0}&city={1}&secret_key={2}&source=1&source_id=3232".format(v2, v3, v1))
+        print(
+            "http://" + temp_url + "/v1/houses/index?phone={0}&city={1}&secret_key={2}&source=1&source_id=3232".format(
+                v2, v3, v1))
 
         print("")

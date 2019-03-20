@@ -20,7 +20,6 @@ def houses_index():
     elif source is None:
         return "source is missing"
     else:
-
         try:
             houses_entity = HOUSES()
             houses_entity.phone = phone
