@@ -130,7 +130,7 @@ class HOUSES(object):
     def redis_images_read(self):
         city_images = self.crm_r.hget(REDIS_CRM_PREFIX + self.real_phone, self.city)
         if city_images is not None:
-            self.city_images = json.loads(city_images.decode('utf-8').replace("'", "\"").replace("nan", "null"))
+            self.city_images = json.loads(city_images.decode('utf-8'))
             if self.city_images['IDCard'] is not None:
                 self.sex = IDInformation(self.city_images['IDCard']).get_sex()
                 self.age = IDInformation(self.city_images['IDCard']).get_age()
