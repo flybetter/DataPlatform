@@ -98,6 +98,7 @@ class HOUSES(object):
         self.redis_data_read()
         self.house_action()
         self.get_price()
+        result.update(self.city_images)
         result['phone'] = self.phone
         result['phone_show'] = self.show_phone
         result['cities'] = self.get_cities()
@@ -111,7 +112,6 @@ class HOUSES(object):
         result['age'] = self.age
         result['days'] = self.days
         result['city'] = self.city
-        result.update(self.city_images)
         self.buried_point(result)
         return result
 

@@ -5,12 +5,14 @@
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <title>数据分析</title>
     <link rel='stylesheet' type='text/css' href="{{ url_for('static', filename='css/style_v1.css') }}">
+    <link rel='stylesheet' type='text/css' href="{{ url_for('static', filename='css/jquery-ui.css') }}">
     <script type="text/javascript"
             src="http://api.map.baidu.com/api?v=2.0&ak=N32lyWhU7RfjrFD76cYt6jmCHGWbicbd"></script>
     <script type="text/javascript" src="{{ url_for('static',filename='js/Heatmap_min.js') }}"></script>
     <script type="text/javascript" src="{{ url_for('static',filename='js/jquery.min.js') }}"></script>
-    <script type="text/javascript" src="{{ url_for('static',filename='js/jquery.nicescroll.min.js') }}"></script>
+    <script type="text/javascript" src="{{ url_for('static',filename='js/jquery.nicescroll.min.6.js') }}"></script>
     <script type="text/javascript" src="{{ url_for('static',filename='js/highcharts.js') }}"></script>
+    <script type="text/javascript" src="{{ url_for('static',filename='js/jquery-ui.js') }}"></script>
     <script type="text/javascript" src="{{ url_for('static',filename='js/highcharts-zh_CN.js') }}"></script>
     <link rel="shortcut icon" href="{{ url_for('static', filename='images/favicon.ico') }}">
 </head>
@@ -48,6 +50,11 @@
             </ul>
         </div>
     </div>
+</div>
+
+
+<div id="dialog" title="错误信息">
+    <p></p>
 </div>
 
 <script type="text/javascript">

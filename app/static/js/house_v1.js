@@ -6,6 +6,21 @@ $(function () {
     var sorted_key = '1';
     // initArray();
 
+    $("#dialog").dialog({
+        autoOpen: false,
+        width: 400,
+        buttons: [
+            {
+                text: "Ok",
+                click: function () {
+                    $(this).dialog("close");
+                }
+            }
+        ]
+    });
+
+    // $("#dialog").dialog("open");
+
 
     // 初始化数据
     $.ajax({
@@ -19,7 +34,13 @@ $(function () {
             sorted_key: '0'
         },
         success: function (resp) {
-            renderResp(resp);
+            if (resp.result) {
+                renderResp(resp);
+            } else {
+                $('#dialog p').html(resp.msg);
+                $("#dialog").dialog("open");
+            }
+
         }
     })
 
@@ -312,6 +333,9 @@ $(function () {
 
         }
 
+        $(".panel-1-wrap").niceScroll({
+            cursorcolor: "#ccc"
+        });
 
         // 渲染结束
     }
@@ -331,7 +355,12 @@ $(function () {
                 sorted_key: sorted_key
             },
             success: function (resp) {
-                renderResp(resp, true);
+                if (resp.result) {
+                    renderResp(resp, true);
+                } else {
+                    $('#dialog p').html(resp.msg);
+                    $("#dialog").dialog("open");
+                }
             }
         })
     })
@@ -366,13 +395,10 @@ $(function () {
         $('.newpanel .panel-item').eq(index).show();
         $('.newpanel .panel-item').eq(1 - index).hide();
         $("#history-map-div").height('95%');
+        $("#history-map-div").niceScroll({
+            cursorcolor: "#ccc"
+        });
     })
-    $("#history-map-div").niceScroll({
-        cursorcolor: "#ccc"
-    });
-    $(".panel-1-wrap").niceScroll({
-        cursorcolor: "#ccc"
-    });
 
     // 排序
     $('.filter .ub-f1').click(function () {
@@ -409,8 +435,13 @@ $(function () {
                 sorted_key: sorted_key
             },
             success: function (resp) {
-                var newhouses = JSON.parse(resp.data.newhouses);
-                renderDetailLi(newhouses)
+                if (resp.result) {
+                    var newhouses = JSON.parse(resp.data.newhouses);
+                    renderDetailLi(newhouses)
+                } else {
+                    $('#dialog p').html(resp.msg);
+                    $("#dialog").dialog("open");
+                }
             }
         })
     })
