@@ -28,6 +28,7 @@ class HOUSES(object):
         self.deviceIds = None
         self.data = list()
         self.office_r = Redis(host=REDIS_HOST, db=REDIS_DB)
+        self.devices_r = Redis(host=REDIS_HOST, db=REDIS_PHONE_DEVICES_DB)
         self.crm_r = Redis(host=REDIS_CRM_HOST, db=REDIS_CRM_DB)
         self.df = None
         self.max_price = None
@@ -144,7 +145,7 @@ class HOUSES(object):
             raise ValueError(" house365 error: this phone number has no record ")
 
     def redis_devices_read(self):
-        self.deviceIds = self.office_r.smembers(REDIS_PHONEDEVICE_PREFIX + self.real_phone)
+        self.deviceIds = self.devices_r.smembers(REDIS_PHONEDEVICE_PREFIX + self.real_phone)
         if len(self.deviceIds) == 0:
             raise ValueError(" house365 error: this phone number has no corresponding device number ")
 

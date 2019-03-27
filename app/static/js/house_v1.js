@@ -465,7 +465,7 @@ $(function () {
 // commonurl = protocol + "//" + hostname + ":" + port + urlphone + "/";
 
 function FormatDate(strTime) {
-    strTime = strTime - 28800000;
+    // strTime = strTime - 28800000;
     var date = new Date(strTime);
     return date.getFullYear() + "-" + plusZero(date.getMonth() + 1) + "-" + plusZero(date.getDate()) + " " + plusZero(date.getHours()) + ":" + plusZero(date.getMinutes()) + ":" + plusZero(date.getSeconds());
 }

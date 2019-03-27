@@ -41,6 +41,8 @@ REDIS_CRM_HOST = get_config('REDIS_CRM_HOST')
 REDIS_CRM_PREFIX = get_config('REDIS_CRM_PREFIX')
 FILE_CRM_USER_PATH = get_config('FILE_CRM_USER_PATH')
 
+REDIS_PHONE_DEVICES_DB = get_config('REDIS_PHONE_DEVICES_DB')
+
 from . import newhouse
 from . import newhouseDetail
 
