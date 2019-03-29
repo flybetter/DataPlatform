@@ -68,7 +68,7 @@ $(function () {
             var ttime = new Date(newhouses_scatter_diagram[index].START_TIME);
             var day = parseInt(Math.abs(now - ttime) / 1000 / 60 / 60 / 24)
             newhouses_scatter_diagram[index] = [
-                maxday - day + 1,
+                maxday - day ,
                 parseFloat(newhouses_scatter_diagram[index].PIC_HX_TOTALPRICE)
             ];
         }

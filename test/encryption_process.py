@@ -36,8 +36,8 @@ if __name__ == '__main__':
     phones.append('13500000001')
 
 
-    # temp_url = "192.168.10.221:5000"
-    temp_url = "192.168.10.221:8000"
+    temp_url = "192.168.10.221:5000"
+    # temp_url = "192.168.10.221:8000"
     # temp_url = "127.0.0.1:5000"
 
     for simple in phones:

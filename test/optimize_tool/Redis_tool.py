@@ -50,9 +50,6 @@ def map_device_count():
     print(len(final_df))
 
 
-
-
-
 if __name__ == '__main__':
     map_device_count()
     # remove_second_house()
