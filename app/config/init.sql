@@ -26,6 +26,7 @@ create table phone_profile_log (
   comment 'area',
   CREATE_TIME timestamp    NULL     default CURRENT_TIMESTAMP
   COMMENT 'create time',
+  index index_phone(PHONE),
   primary key (id)
 )
   ENGINE = InnoDB
