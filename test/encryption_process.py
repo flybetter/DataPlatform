@@ -53,10 +53,10 @@ if __name__ == '__main__':
         # print(md5_algorithm(simple))
         # print(AES_algorithm_encryption(simple).decode('utf-8'))
         # print(URL_encode_encryption(city))
-        print(
-            "http://" + temp_url + "/v1/houses/api?phone={0}&city={1}&days=30&secret_key={2}&sorted_key=1&source=1&source_id=3232".format(
-                v2, v3,
-                v1))
+        # print(
+        #     "http://" + temp_url + "/v1/houses/api?phone={0}&city={1}&days=30&secret_key={2}&sorted_key=1&source=1&source_id=3232".format(
+        #         v2, v3,
+        #         v1))
         # print("http://" + temp_url + "/houses/{0}/{1}/30?secret={2}".format(simple, v3, v1))
 
         print(

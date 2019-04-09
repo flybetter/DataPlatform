@@ -29,7 +29,7 @@ def newhouse_handle(datas):
 if __name__ == '__main__':
     NEWHOUSELOG_PREFIX = "NHLOG^"
     PHONEDEVICE_PREFIX = "PD^"
-    r = Redis(host='192.168.10.221', port=6379, db=1)
+    r = Redis(host='192.168.10.221', port=6379, db=4)
 
     keys = r.keys('NHLOG^*')
     for key in keys:
