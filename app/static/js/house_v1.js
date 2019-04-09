@@ -216,13 +216,13 @@ $(function () {
                             }
                         },
                         tooltip: {
-                            // headerFormat: '<b>{series.name}</b><br>',
+                            headerFormat: null,
                             pointFormat: '第{point.x}天,总价：{point.y} 万元'
                         }
                     }
                 },
                 series: [{
-                    // name: '女',
+                    // name:nul,
                     color: '#ce5858',
                     data: newhouses_scatter_diagram
                 }]

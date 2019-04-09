@@ -6,7 +6,7 @@ import os
 
 
 def get_config(name):
-    env = os.getenv('active', 'production')
+    env = os.getenv('active', 'develop')
     con = configparser.ConfigParser()
     con.read(os.path.dirname(os.path.abspath(__file__)) + os.sep + 'settings.ini')
     return con.get(env, name)
