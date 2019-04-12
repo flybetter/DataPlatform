@@ -45,8 +45,8 @@ if __name__ == '__main__':
             con = engine.connect()
             df.to_sql('behaviors_demo', con=engine, if_exists='append', index=False)
 
-    # df.to_csv("data.txt", index=False)
 
+    # df.to_csv("data.txt", index=False)
     # df = pd.read_json(datas, orient='records')
     # object = newhouse_demo(df, '合肥')
     # cities = object.get_cities()
