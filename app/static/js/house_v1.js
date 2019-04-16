@@ -4,6 +4,7 @@ $(function () {
     var map;
     var initInfo;
     var sorted_key = '1';
+    var zIndex = 10;
     // initArray();
 
     $("#dialog").dialog({
@@ -216,13 +217,13 @@ $(function () {
                             }
                         },
                         tooltip: {
-                            headerFormat: null,
+                             headerFormat: null,
                             pointFormat: '第{point.x}天,总价：{point.y} 万元'
                         }
                     }
                 },
                 series: [{
-                    // name:nul,
+                    // name: '女',
                     color: '#ce5858',
                     data: newhouses_scatter_diagram
                 }]
@@ -329,6 +330,11 @@ $(function () {
                 borderRadius: "3px",
                 fontWeight: "bold"
             });
+            label.addEventListener('click',function(e){
+                $(e.domEvent.target).parent().css('zIndex',zIndex)
+                zIndex ++;
+            })
+
             marker.setLabel(label);
 
         }
