@@ -45,7 +45,7 @@ $(function () {
         }
     })
 
-    function renderResp(json, flag = false) {
+    function renderResp(json) {
         // 准备数据开始
         if (flag) {
             city = $('#changeCity').val()
