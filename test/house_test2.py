@@ -29,7 +29,7 @@ def newhouse_handle(datas):
 if __name__ == '__main__':
     NEWHOUSELOG_PREFIX = "NHLOG^"
     PHONEDEVICE_PREFIX = "PD^"
-    r = Redis(host='192.168.10.221', port=6379, db=4)
+    r = Redis(host='202.102.83.162', port=6379, db=1)
 
     keys = r.keys('NHLOG^*')
     for key in keys:
@@ -43,7 +43,7 @@ if __name__ == '__main__':
             df = pd.read_json(json.dumps(result, ensure_ascii=False), orient='records')
             engine = create_engine('mysql+pymysql://root:idontcare@192.168.10.221/demo')
             con = engine.connect()
-            df.to_sql('behaviors_demo', con=engine, if_exists='append', index=False)
+            df.to_sql('user_profile_v4', con=engine, if_exists='append', index=False)
 
 
     # df.to_csv("data.txt", index=False)
