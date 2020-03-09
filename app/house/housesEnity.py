@@ -38,6 +38,8 @@ class HOUSES(object):
         self.age = None
         self.show_phone = None
         self.count = None
+        self.companyCount = 0
+        self.company = list()
 
     @property
     def phone(self):
@@ -107,8 +109,9 @@ class HOUSES(object):
         result['max_price'] = self.max_price
         result['secret_key'] = self.secret_key
         result['newhouses_scatter_diagram'] = self.get_scatter_diagram()
-        result['newhouses'] = self.get_item_detail()
+        result['newhouses'] = self.get_item_detail_company()
         result['count'] = self.count
+        result['companyCount'] = self.companyCount
         result['sex'] = self.sex
         result['age'] = self.age
         result['days'] = self.days
@@ -188,6 +191,45 @@ class HOUSES(object):
         data = datas[['B_LNG', 'B_LAT', 'START_TIME', 'COUNT', 'PRJ_ITEMNAME', 'PRICE_SHOW']].to_json(orient="records",
                                                                                                       force_ascii=False)
         return data
+
+    @decorator
+    def get_item_detail_company(self):
+        df = self.df[self.df['CITY_NAME'] == self.city]
+        df = self.days_calculator(df)
+        self.count = len(df)
+
+        company_df = df[df['PRJ_ITEMNAME'].isin(self.company)]
+        company_df['TAG'] = 1
+        self.companyCount = len(company_df)
+        not_company_df = df[~df['PRJ_ITEMNAME'].isin(self.company)]
+        not_company_df['TAG'] = 0
+
+        company_df_filter = self.company_commom_function(company_df)
+        not_company_df_filter = self.company_commom_function(not_company_df)
+        final = pd.concat([company_df_filter, not_company_df_filter])
+        data = final[['B_LNG', 'B_LAT', 'START_TIME', 'COUNT', 'PRJ_ITEMNAME', 'PRICE_SHOW', 'TAG']].to_json(
+            orient="records",
+            force_ascii=False)
+        return data
+
+    def company_commom_function(self, df):
+        df_result = df.sort_values(by='START_TIME', ascending=False)
+        df_count = df_result.groupby('CONTEXT_ID').size().reset_index(name='COUNT')
+        df_order = df_result.groupby('CONTEXT_ID').nth(0)
+        datas = df_order.merge(df_count, how='left', on='CONTEXT_ID')
+        if self.sorted_key == str(0):
+            datas.sort_values(by='COUNT', ascending=False, inplace=True)
+        elif self.sorted_key == str(1):
+            datas.sort_values(by='COUNT', inplace=True)
+        elif self.sorted_key == str(2):
+            datas.sort_values(by='START_TIME', ascending=False, inplace=True)
+        elif self.sorted_key == str(3):
+            datas.sort_values(by='START_TIME', inplace=True)
+
+        # data = datas[['B_LNG', 'B_LAT', 'START_TIME', 'COUNT', 'PRJ_ITEMNAME', 'PRICE_SHOW']].to_json(orient="records",
+        #                                                                                               force_ascii=False)
+
+        return datas
 
     def days_calculator(self, datas):
         boundary = datetime.now() - timedelta(days=int(self.days))

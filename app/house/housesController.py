@@ -1,5 +1,7 @@
 from app.house import *
 from app.house.housesEnity import HOUSES
+import urllib
+import string
 
 
 @houses_v1.route("/index", methods=['GET'])
@@ -39,9 +41,11 @@ def houses_api():
     city = request.args.get("city")
     days = request.args.get("days")
     result = dict()
+    company = companyHouses(city)
     try:
         houses_entity = HOUSES()
         houses_entity.phone = phone
+        houses_entity.company = company
         houses_entity.city = city
         houses_entity.days = days
         houses_entity.sorted_key = sorted_key
@@ -57,8 +61,21 @@ def houses_api():
     return jsonify(result)
 
 
+def companyHouses(city):
+    url = 'http://crm.house365.com/api/directProject/projects?city=' + city
+    s = urllib.parse.quote(url, safe=string.printable)
+    response = urllib.request.urlopen(s)
+    jsonBody = json.loads(response.read().decode(encoding='utf-8'))
+    company = list(map(lambda x: x['project_name'], jsonBody))
+    return company
+
+    # body = request.urlopen(
+    #     "http://crm.house365.com/api/directProject/projects?city={}".format(str(city, encoding='unicode')))
+    # print(body)
+
+
 if __name__ == '__main__':
-    pass
+    companyHouses('南京')
 
     # md5
     # m = hashlib.new('md5', ('18652058969house365').encode('utf-8')).hexdigest()

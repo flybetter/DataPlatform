@@ -207,6 +207,9 @@ body {
 .p-title span {
     color: #888;
 }
+.p-title .col_fe8702{
+    color: #fe8702;
+}
 
 .newpanel {
     width: 330px;

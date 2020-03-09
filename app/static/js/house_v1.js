@@ -45,8 +45,9 @@ $(function () {
         }
     })
 
-    function renderResp(json,flag ) {
-	    var flag = flag ||false
+
+    function renderResp(json, flag) {
+        var flag = flag || false
         // 准备数据开始
         if (flag) {
             city = $('#changeCity').val()
@@ -70,7 +71,7 @@ $(function () {
             var ttime = new Date(newhouses_scatter_diagram[index].START_TIME);
             var day = parseInt(Math.abs(now - ttime) / 1000 / 60 / 60 / 24)
             newhouses_scatter_diagram[index] = [
-                maxday - day ,
+                maxday - day,
                 parseFloat(newhouses_scatter_diagram[index].PIC_HX_TOTALPRICE)
             ];
         }
@@ -86,6 +87,8 @@ $(function () {
         $('#changeCity').html(optionHtml);
         $('#changeCity').val(city);
         $('.p-title .count').html(data.count);
+        $('.p-title .companyCount').html(data.companyCount);
+
 
         renderDetailLi(newhouses);
 
@@ -218,7 +221,7 @@ $(function () {
                             }
                         },
                         tooltip: {
-                             headerFormat: null,
+                            headerFormat: null,
                             pointFormat: '第{point.x}天,总价：{point.y} 万元'
                         }
                     }
@@ -302,16 +305,31 @@ $(function () {
             var point = new BMap.Point(poi.B_LNG, poi.B_LAT);
             // 创建标注
             var marker = new BMap.Marker(point);
-            if (poi.COUNT < 6) {
-                var myIcon = new BMap.Icon("../../../static/images/circle.png", new BMap.Size(25, 25));
-            } else if (poi.COUNT < 21) {
-                var myIcon = new BMap.Icon("../../../static/images/circle-middle.png", new BMap.Size(36, 36));
+
+            if (poi.TAG == 0) {
+                if (poi.COUNT < 6) {
+                    var myIcon = new BMap.Icon("../../../static/images/circle.png", new BMap.Size(25, 25));
+                } else if (poi.COUNT < 21) {
+                    var myIcon = new BMap.Icon("../../../static/images/circle-middle.png", new BMap.Size(36, 36));
+                } else {
+                    var myIcon = new BMap.Icon("../../../static/images/circle-big.png", new BMap.Size(50, 50));
+                }
+                var marker = new BMap.Marker(point, {
+                    icon: myIcon
+                });
             } else {
-                var myIcon = new BMap.Icon("../../../static/images/circle-big.png", new BMap.Size(50, 50));
+                if (poi.COUNT < 6) {
+                    var myIcon = new BMap.Icon("../../../static/images/circle-blue.png", new BMap.Size(25, 25));
+                } else if (poi.COUNT < 21) {
+                    var myIcon = new BMap.Icon("../../../static/images/circle-middle-blue.png", new BMap.Size(36, 36));
+                } else {
+                    var myIcon = new BMap.Icon("../../../static/images/circle-big-blue.png", new BMap.Size(50, 50));
+                }
+                var marker = new BMap.Marker(point, {
+                    icon: myIcon
+                });
             }
-            var marker = new BMap.Marker(point, {
-                icon: myIcon
-            });
+
 
             // 将标注添加到地图中
             map.addOverlay(marker);
@@ -331,9 +349,9 @@ $(function () {
                 borderRadius: "3px",
                 fontWeight: "bold"
             });
-            label.addEventListener('click',function(e){
-                $(e.domEvent.target).parent().css('zIndex',zIndex)
-                zIndex ++;
+            label.addEventListener('click', function (e) {
+                $(e.domEvent.target).parent().css('zIndex', zIndex)
+                zIndex++;
             })
 
             marker.setLabel(label);
