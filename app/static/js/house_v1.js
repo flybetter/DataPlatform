@@ -403,7 +403,11 @@ $(function () {
             historyHtml += '<div class="right">' + newhouses[k].COUNT + '次</div>';
             historyHtml += '</div>';
             historyHtml += '<div class="line2">';
-            historyHtml += '<div class="left">' + newhouses[k].PRJ_ITEMNAME + '</div>';
+            if(newhouses[k].TAG == 0){
+                historyHtml += '<div class="left">' + newhouses[k].PRJ_ITEMNAME + '</div>';
+            }else {
+                historyHtml += '<div class="left-blue">' + newhouses[k].PRJ_ITEMNAME + '</div>';
+            }
             var price = newhouses[k].PRICE_SHOW || '未知';
             historyHtml += '<div class="right">' + price + '</div>';
             historyHtml += '</div>';

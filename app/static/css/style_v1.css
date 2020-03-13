@@ -124,6 +124,8 @@ body {
     font-weight: bolder;
 }
 
+
+
 .sideul li:last-child {
     border-bottom: none;
 }
@@ -148,6 +150,13 @@ body {
     float: left;
     clear: both;
 }
+
+.sideul li .line2 .left-blue {
+    float: left;
+    clear: both;
+    color: #007fff;
+}
+
 
 .sideul li .line2 .right {
     float: right;
